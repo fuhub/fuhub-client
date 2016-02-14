@@ -7,4 +7,3 @@ client to my fun hub
 * [ ] use eventsource polyfill
 * [ ] breakdown api into modules
 * [ ] build scripts
-* 
