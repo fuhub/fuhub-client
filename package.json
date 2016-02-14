@@ -1,0 +1,29 @@
+{
+  "name": "fuhub-client",
+  "version": "0.1.0",
+  "description": "hub client",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuhub/fuhub-client.git"
+  },
+  "keywords": [
+    "client"
+  ],
+  "author": "Sergey Todyshev <stodyshev@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fuhub/fuhub-client/issues"
+  },
+  "homepage": "https://github.com/fuhub/fuhub-client#readme",
+  "dependencies": {
+    "eventemitter3": "^1.1.1",
+    "eventsource": "^0.2.0",
+    "isomorphic-fetch": "^2.2.1",
+    "lodash": "^4.3.0",
+    "query-string": "^3.0.0"
+  }
+}
