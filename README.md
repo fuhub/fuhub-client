@@ -6,3 +6,5 @@ client to my fun hub
 * [ ] use isomorphic-fetch
 * [ ] use eventsource polyfill
 * [ ] breakdown api into modules
+* [ ] build scripts
+* 
