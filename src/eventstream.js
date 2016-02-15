@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import callbackQueue from 'callback-queue';
-import { joinPath } from './http';
+import urljoin from 'url-join';
 import queryString from 'query-string';
 import _ from 'lodash';
 
@@ -17,7 +17,7 @@ export default class EventStream extends EventEmitter {
 		this.close();
 
 		const params = queryString.stringify({ auth_token: options.token });
-		const url = joinPath(options.url, `?${params}`);
+		const url = urljoin(options.url, `?${params}`);
 		const source = new EventSource(url);
 		const self = this;
 

@@ -1,10 +1,9 @@
-import { HttpEvents } from './http';
-import { HTTP, API } from './api';
+import HubClient from './client';
 import EventStream from './eventstream';
 
 export {
-	HttpEvents,
-	HTTP,
-	API,
+	HubClient,
 	EventStream,
 };
+
+export default HubClient;
