@@ -5,13 +5,21 @@ export default class Collection {
 		this.path = `/api/${this.name}`;
 	}
 
-	load() {
+	fetch() {
 		return this.client.fetchJSON(this.path);
 	}
 
-	scan() {
-		return this.load();
+	load() {
+		return this.fetch();
 	}
 
-	// TODO create, find
+	scan() {
+		return this.fetch();
+	}
+
+	create(body) {
+		return this.client.fetchJSON(this.path, { method: 'post', body });
+	}
+
+	// TODO find
 }

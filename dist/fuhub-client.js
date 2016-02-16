@@ -111,9 +111,14 @@
                 this.path = "/api/" + type + "/" + this.id;
             }
             return _createClass(Resource, [ {
-                key: "load",
+                key: "fetch",
                 value: function() {
                     return this.client.fetchJSON(this.path);
+                }
+            }, {
+                key: "load",
+                value: function() {
+                    return this.fetch();
                 }
             }, {
                 key: "update",
@@ -207,14 +212,27 @@
                 _classCallCheck(this, Collection), this.client = client, this.name = name, this.path = "/api/" + this.name;
             }
             return _createClass(Collection, [ {
-                key: "load",
+                key: "fetch",
                 value: function() {
                     return this.client.fetchJSON(this.path);
                 }
             }, {
+                key: "load",
+                value: function() {
+                    return this.fetch();
+                }
+            }, {
                 key: "scan",
                 value: function() {
-                    return this.load();
+                    return this.fetch();
+                }
+            }, {
+                key: "create",
+                value: function(body) {
+                    return this.client.fetchJSON(this.path, {
+                        method: "post",
+                        body: body
+                    });
                 }
             } ]), Collection;
         }();

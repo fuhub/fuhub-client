@@ -8,8 +8,12 @@ export default class Resource {
 		this.path = `/api/${type}/${this.id}`;
 	}
 
-	load() {
+	fetch() {
 		return this.client.fetchJSON(this.path);
+	}
+
+	load() {
+		return this.fetch();
 	}
 
 	update(payload) {
