@@ -5,15 +5,19 @@ export default class Resource {
 		this.client = client;
 		this.type = type;
 		this.id = id;
-		this.path = `${type}/${this.id}`;
+		this.path = `/api/${type}/${this.id}`;
 	}
 
 	load() {
-		return this.client.fetchJSON(`/api/${this.path}`);
+		return this.client.fetchJSON(this.path);
+	}
+
+	update(payload) {
+		return this.client.fetchJSON(this.path, { method: 'PUT', body: payload });
 	}
 
 	delete() {
-		return this.client.delete(`/api/${this.path}`);
+		return this.client.delete(this.path);
 	}
 
 	remove() {

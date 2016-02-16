@@ -80,7 +80,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.EventStream = exports.HubClient = void 0;
-        var _client = __webpack_require__(11), _client2 = _interopRequireDefault(_client), _eventstream = __webpack_require__(13), _eventstream2 = _interopRequireDefault(_eventstream);
+        var _client = __webpack_require__(12), _client2 = _interopRequireDefault(_client), _eventstream = __webpack_require__(13), _eventstream2 = _interopRequireDefault(_eventstream);
         exports.HubClient = _client2["default"], exports.EventStream = _eventstream2["default"], 
         exports["default"] = _client2["default"];
     }, /* 1 */
@@ -108,17 +108,25 @@
         }(), Resource = function() {
             function Resource(client, type, id) {
                 _classCallCheck(this, Resource), this.client = client, this.type = type, this.id = id, 
-                this.path = type + "/" + this.id;
+                this.path = "/api/" + type + "/" + this.id;
             }
             return _createClass(Resource, [ {
                 key: "load",
                 value: function() {
-                    return this.client.fetchJSON("/api/" + this.path);
+                    return this.client.fetchJSON(this.path);
+                }
+            }, {
+                key: "update",
+                value: function(payload) {
+                    return this.client.fetchJSON(this.path, {
+                        method: "PUT",
+                        body: payload
+                    });
                 }
             }, {
                 key: "delete",
                 value: function() {
-                    return this.client["delete"]("/api/" + this.path);
+                    return this.client["delete"](this.path);
                 }
             }, {
                 key: "remove",
@@ -173,6 +181,45 @@
             };
         }).call(exports, __webpack_require__(2).setImmediate, __webpack_require__(2).clearImmediate);
     }, /* 3 */
+    /***/
+    function(module, exports) {
+        "use strict";
+        function _classCallCheck(instance, Constructor) {
+            if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+        }
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        });
+        var _createClass = function() {
+            function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                    var descriptor = props[i];
+                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                    "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+                }
+            }
+            return function(Constructor, protoProps, staticProps) {
+                return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
+                Constructor;
+            };
+        }(), Collection = function() {
+            function Collection(client, name) {
+                _classCallCheck(this, Collection), this.client = client, this.name = name, this.path = "/api/" + this.name;
+            }
+            return _createClass(Collection, [ {
+                key: "load",
+                value: function() {
+                    return this.client.fetchJSON(this.path);
+                }
+            }, {
+                key: "scan",
+                value: function() {
+                    return this.load();
+                }
+            } ]), Collection;
+        }();
+        exports["default"] = Collection;
+    }, /* 4 */
     /***/
     function(module, exports) {
         /**
@@ -376,7 +423,7 @@
         /** Used as references for various `Number` constants. */
         var MAX_SAFE_INTEGER = 9007199254740991, argsTag = "[object Arguments]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", objectProto = Object.prototype, hasOwnProperty = objectProto.hasOwnProperty, objectToString = objectProto.toString, propertyIsEnumerable = objectProto.propertyIsEnumerable, getLength = baseProperty("length");
         module.exports = isArguments;
-    }, /* 4 */
+    }, /* 5 */
     /***/
     function(module, exports) {
         /**
@@ -493,7 +540,7 @@
             return isObjectLike(value) && isLength(value.length) && objToString.call(value) == arrayTag;
         };
         module.exports = isArray;
-    }, /* 5 */
+    }, /* 6 */
     /***/
     function(module, exports, __webpack_require__) {
         /**
@@ -585,9 +632,9 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-        var isArguments = __webpack_require__(3), isArray = __webpack_require__(4), reIsUint = /^\d+$/, objectProto = Object.prototype, hasOwnProperty = objectProto.hasOwnProperty, MAX_SAFE_INTEGER = 9007199254740991;
+        var isArguments = __webpack_require__(4), isArray = __webpack_require__(5), reIsUint = /^\d+$/, objectProto = Object.prototype, hasOwnProperty = objectProto.hasOwnProperty, MAX_SAFE_INTEGER = 9007199254740991;
         module.exports = keysIn;
-    }, /* 6 */
+    }, /* 7 */
     /***/
     function(module, exports, __webpack_require__) {
         var __WEBPACK_AMD_DEFINE_RESULT__;
@@ -10423,10 +10470,10 @@
                     return _;
                 }.call(exports, __webpack_require__, exports, module), !(__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
             }).call(this);
-        }).call(exports, __webpack_require__(9)(module), function() {
+        }).call(exports, __webpack_require__(10)(module), function() {
             return this;
         }());
-    }, /* 7 */
+    }, /* 8 */
     /***/
     function(module, exports) {
         function cleanUpNextTick() {
@@ -10470,7 +10517,7 @@
         }, process.umask = function() {
             return 0;
         };
-    }, /* 8 */
+    }, /* 9 */
     /***/
     function(module, exports) {
         function normalize(str) {
@@ -10480,7 +10527,7 @@
             var joined = [].slice.call(arguments, 0).join("/");
             return normalize(joined);
         };
-    }, /* 9 */
+    }, /* 10 */
     /***/
     function(module, exports) {
         module.exports = function(module) {
@@ -10488,7 +10535,7 @@
             return module.webpackPolyfill || (module.deprecate = function() {}, module.paths = [], 
             module.children = [], module.webpackPolyfill = 1), module;
         };
-    }, /* 10 */
+    }, /* 11 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -10525,7 +10572,7 @@
             return _inherits(Channel, _Resource), Channel;
         }(_resource2["default"]);
         exports["default"] = Channel;
-    }, /* 11 */
+    }, /* 12 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -10537,10 +10584,10 @@
         function _classCallCheck(instance, Constructor) {
             if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
         }
-        function makeResource(client, singleName, collectionName, id) {
+        function makeResource(client, singularName, collectionName, id) {
             switch (collectionName.toLowerCase()) {
               case "users":
-                return new _user2["default"](client, id);
+                return new _user.User(client, id);
 
               case "channels":
                 return new _channel2["default"](client, id);
@@ -10552,11 +10599,20 @@
                 return new _message2["default"](client, id);
 
               default:
-                return new _resource2["default"](client, singleName, id);
+                return new _resource2["default"](client, singularName, id);
+            }
+        }
+        function createCollection(client, name) {
+            switch (name) {
+              case "users":
+                return new _user.UserCollection(client, name);
+
+              default:
+                return new _collection2["default"](client, name);
             }
         }
         function makeCollection(client, collectionName) {
-            var collection = new _collection2["default"](client, collectionName), documentFn = function(id) {
+            var collection = createCollection(client, collectionName), documentFn = function(id) {
                 return id ? makeResource(client, collectionName, id) : collection;
             }, _iteratorNormalCompletion = !0, _didIteratorError = !1, _iteratorError = void 0;
             try {
@@ -10596,7 +10652,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _resource = __webpack_require__(1), _resource2 = _interopRequireDefault(_resource), _user = __webpack_require__(17), _user2 = _interopRequireDefault(_user), _channel = __webpack_require__(10), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(16), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(14), _message2 = _interopRequireDefault(_message), _collection = __webpack_require__(12), _collection2 = _interopRequireDefault(_collection), _mimeType = __webpack_require__(15), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(8), _urlJoin2 = _interopRequireDefault(_urlJoin), _lodash = __webpack_require__(6), _lodash2 = _interopRequireDefault(_lodash);
+        }(), _resource = __webpack_require__(1), _resource2 = _interopRequireDefault(_resource), _user = __webpack_require__(17), _channel = __webpack_require__(11), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(16), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(14), _message2 = _interopRequireDefault(_message), _collection = __webpack_require__(3), _collection2 = _interopRequireDefault(_collection), _mimeType = __webpack_require__(15), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(9), _urlJoin2 = _interopRequireDefault(_urlJoin), _lodash = __webpack_require__(7), _lodash2 = _interopRequireDefault(_lodash);
         __webpack_require__(21).polyfill(), __webpack_require__(23);
         var defaultOptions = {
             endpoint: "",
@@ -10645,45 +10701,6 @@
             } ]), HubClient;
         }();
         exports["default"] = HubClient;
-    }, /* 12 */
-    /***/
-    function(module, exports) {
-        "use strict";
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-        }
-        Object.defineProperty(exports, "__esModule", {
-            value: !0
-        });
-        var _createClass = function() {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
-                    "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-            return function(Constructor, protoProps, staticProps) {
-                return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
-                Constructor;
-            };
-        }(), ResourceCollection = function() {
-            function ResourceCollection(client, name) {
-                _classCallCheck(this, ResourceCollection), this.client = client, this.name = name;
-            }
-            return _createClass(ResourceCollection, [ {
-                key: "load",
-                value: function() {
-                    return this.client.fetchJSON("/api/" + this.name);
-                }
-            }, {
-                key: "scan",
-                value: function() {
-                    return this.load();
-                }
-            } ]), ResourceCollection;
-        }();
-        exports["default"] = ResourceCollection;
     }, /* 13 */
     /***/
     function(module, exports, __webpack_require__) {
@@ -10726,7 +10743,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _eventemitter = __webpack_require__(22), _eventemitter2 = _interopRequireDefault(_eventemitter), _callbackQueue = __webpack_require__(18), _callbackQueue2 = _interopRequireDefault(_callbackQueue), _urlJoin = __webpack_require__(8), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(38), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(6), _lodash2 = _interopRequireDefault(_lodash), EventStream = function(_EventEmitter) {
+        }(), _eventemitter = __webpack_require__(22), _eventemitter2 = _interopRequireDefault(_eventemitter), _callbackQueue = __webpack_require__(18), _callbackQueue2 = _interopRequireDefault(_callbackQueue), _urlJoin = __webpack_require__(9), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(38), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(7), _lodash2 = _interopRequireDefault(_lodash), EventStream = function(_EventEmitter) {
             function EventStream(options) {
                 _classCallCheck(this, EventStream);
                 var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventStream).call(this));
@@ -10842,12 +10859,41 @@
         }
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        });
-        var _resource = __webpack_require__(1), _resource2 = _interopRequireDefault(_resource), Thread = function(_Resource) {
+        }), exports.defaultFormat = void 0;
+        var _createClass = function() {
+            function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                    var descriptor = props[i];
+                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                    "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+                }
+            }
+            return function(Constructor, protoProps, staticProps) {
+                return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
+                Constructor;
+            };
+        }(), _resource = __webpack_require__(1), _resource2 = _interopRequireDefault(_resource), defaultFormat = exports.defaultFormat = "text/markdown", Thread = function(_Resource) {
             function Thread(client, id) {
                 return _classCallCheck(this, Thread), _possibleConstructorReturn(this, Object.getPrototypeOf(Thread).call(this, client, "thread", id));
             }
-            return _inherits(Thread, _Resource), Thread;
+            return _inherits(Thread, _Resource), _createClass(Thread, [ {
+                key: "sendMessage",
+                value: function(msg) {
+                    var payload = msg;
+                    return "string" == typeof msg && (payload = {
+                        body: msg,
+                        format: defaultFormat
+                    }), this.client.fetchJSON(this.path, {
+                        method: "post",
+                        body: payload
+                    });
+                }
+            }, {
+                key: "send",
+                value: function(msg) {
+                    return this.sendMessage(msg);
+                }
+            } ]), Thread;
         }(_resource2["default"]);
         exports["default"] = Thread;
     }, /* 17 */
@@ -10879,14 +10925,36 @@
         }
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        });
-        var _resource = __webpack_require__(1), _resource2 = _interopRequireDefault(_resource), User = function(_Resource) {
+        }), exports.UserCollection = exports.User = void 0;
+        var _createClass = function() {
+            function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                    var descriptor = props[i];
+                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                    "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+                }
+            }
+            return function(Constructor, protoProps, staticProps) {
+                return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
+                Constructor;
+            };
+        }(), _resource = __webpack_require__(1), _resource2 = _interopRequireDefault(_resource), _collection = __webpack_require__(3), _collection2 = _interopRequireDefault(_collection);
+        exports.User = function(_Resource) {
             function User(client, id) {
                 return _classCallCheck(this, User), _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, client, "user", id));
             }
             return _inherits(User, _Resource), User;
-        }(_resource2["default"]);
-        exports["default"] = User;
+        }(_resource2["default"]), exports.UserCollection = function(_Collection) {
+            function UserCollection(client, name) {
+                return _classCallCheck(this, UserCollection), _possibleConstructorReturn(this, Object.getPrototypeOf(UserCollection).call(this, client, name));
+            }
+            return _inherits(UserCollection, _Collection), _createClass(UserCollection, [ {
+                key: "current",
+                value: function() {
+                    return this.client.fetchJSON(this.path + "/me");
+                }
+            } ]), UserCollection;
+        }(_collection2["default"]);
     }, /* 18 */
     /***/
     function(module, exports, __webpack_require__) {
@@ -10964,7 +11032,7 @@
                 if (error instanceof Error != !0) throw new Error("you must pass an instance of Error object when canceling requests");
                 iterateOverCallbacks(bucket, [ error ]), cleanup(key);
             };
-        }).call(exports, __webpack_require__(2).setImmediate, __webpack_require__(7));
+        }).call(exports, __webpack_require__(2).setImmediate, __webpack_require__(8));
     }, /* 19 */
     /***/
     function(module, exports, __webpack_require__) {
@@ -11786,9 +11854,9 @@
                 }.call(exports, __webpack_require__, exports, module), !(void 0 !== __WEBPACK_AMD_DEFINE_RESULT__ && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))) : "undefined" != typeof module && module.exports ? module.exports = lib$es6$promise$umd$$ES6Promise : "undefined" != typeof this && (this.ES6Promise = lib$es6$promise$umd$$ES6Promise), 
                 lib$es6$promise$polyfill$$default();
             }).call(this);
-        }).call(exports, __webpack_require__(7), function() {
+        }).call(exports, __webpack_require__(8), function() {
             return this;
-        }(), __webpack_require__(9)(module));
+        }(), __webpack_require__(10)(module));
     }, /* 22 */
     /***/
     function(module, exports, __webpack_require__) {
@@ -12119,7 +12187,7 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-        var isArguments = __webpack_require__(3), isArray = __webpack_require__(4), MAX_SAFE_INTEGER = 9007199254740991, getLength = baseProperty("length");
+        var isArguments = __webpack_require__(4), isArray = __webpack_require__(5), MAX_SAFE_INTEGER = 9007199254740991, getLength = baseProperty("length");
         module.exports = baseFlatten;
     }, /* 27 */
     /***/
@@ -12611,7 +12679,7 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-        var baseFor = __webpack_require__(27), keysIn = __webpack_require__(5);
+        var baseFor = __webpack_require__(27), keysIn = __webpack_require__(6);
         module.exports = pickByCallback;
     }, /* 35 */
     /***/
@@ -12624,7 +12692,7 @@
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 * Available under MIT license <https://lodash.com/license>
 	 */
-        var arrayMap = __webpack_require__(24), baseDifference = __webpack_require__(25), baseFlatten = __webpack_require__(26), bindCallback = __webpack_require__(29), pickByArray = __webpack_require__(33), pickByCallback = __webpack_require__(34), keysIn = __webpack_require__(5), restParam = __webpack_require__(36), omit = restParam(function(object, props) {
+        var arrayMap = __webpack_require__(24), baseDifference = __webpack_require__(25), baseFlatten = __webpack_require__(26), bindCallback = __webpack_require__(29), pickByArray = __webpack_require__(33), pickByCallback = __webpack_require__(34), keysIn = __webpack_require__(6), restParam = __webpack_require__(36), omit = restParam(function(object, props) {
             if (null == object) return {};
             if ("function" != typeof props[0]) {
                 var props = arrayMap(baseFlatten(props), String);

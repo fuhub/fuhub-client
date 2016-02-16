@@ -1,7 +1,7 @@
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 import Resource from './resource';
-import User from './user';
+import { User, UserCollection } from './user';
 import Channel from './channel';
 import Thread from './thread';
 import Message from './message';
@@ -10,7 +10,7 @@ import mimeType from './mimeType';
 import urljoin from 'url-join';
 import _ from 'lodash';
 
-function makeResource(client, singleName, collectionName, id) {
+function makeResource(client, singularName, collectionName, id) {
 	switch (collectionName.toLowerCase()) {
 	case 'users':
 		return new User(client, id);
@@ -21,12 +21,21 @@ function makeResource(client, singleName, collectionName, id) {
 	case 'messages':
 		return new Message(client, id);
 	default:
-		return new Resource(client, singleName, id);
+		return new Resource(client, singularName, id);
+	}
+}
+
+function createCollection(client, name) {
+	switch (name) {
+	case 'users':
+		return new UserCollection(client, name);
+	default:
+		return new ResourceCollection(client, name);
 	}
 }
 
 function makeCollection(client, collectionName) {
-	const collection = new ResourceCollection(client, collectionName);
+	const collection = createCollection(client, collectionName);
 	const documentFn = function (id) {
 		if (!id) return collection;
 		return makeResource(client, collectionName, id);

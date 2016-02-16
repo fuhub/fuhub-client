@@ -1,7 +1,8 @@
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
-fetchJSON(url, options = {}) {
+// TODO duplicate code (see client.js)
+function fetchJSON(url, options = {}) {
 	const opts = {
 		headers: {
 			// TODO support basic auth
@@ -16,16 +17,13 @@ fetchJSON(url, options = {}) {
 // TODO support custom endpoint
 // TODO rename to lastToken?
 export function token() {
-	return HTTP.get('/api/token');
+	return fetchJSON('/api/token');
 }
 
 export function login(payload) {
-	return fetchJSON('/api/login', { method: 'post', body : payload }));
+	return fetchJSON('/api/login', { method: 'post', body: payload });
 }
 
 export function signup(user) {
-	return HTTP.post('signup', user).then(t => {
-		HTTP.token = t;
-		return t;
-	});
+	return fetchJSON('/api/signup', { method: 'post', body: user });
 }
