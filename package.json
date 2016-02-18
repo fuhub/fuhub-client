@@ -26,6 +26,7 @@
     "eventsource": "^0.2.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.3.0",
+    "pluralize": "^1.2.1",
     "query-string": "^3.0.0",
     "url-join": "0.0.1"
   },

@@ -151,7 +151,7 @@
             function Timeout(id, clearFn) {
                 this._id = id, this._clearFn = clearFn;
             }
-            var nextTick = __webpack_require__(40).nextTick, apply = Function.prototype.apply, slice = Array.prototype.slice, immediateIds = {}, nextImmediateId = 0;
+            var nextTick = __webpack_require__(41).nextTick, apply = Function.prototype.apply, slice = Array.prototype.slice, immediateIds = {}, nextImmediateId = 0;
             // DOM APIs, for completeness
             exports.setTimeout = function() {
                 return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
@@ -10602,41 +10602,41 @@
         function _classCallCheck(instance, Constructor) {
             if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
         }
-        function makeResource(client, singularName, collectionName, id) {
-            switch (collectionName.toLowerCase()) {
-              case "users":
+        function makeResource(client, resourceType, id) {
+            switch (resourceType.toLowerCase()) {
+              case "user":
                 return new _user.User(client, id);
 
-              case "channels":
+              case "channel":
                 return new _channel2["default"](client, id);
 
-              case "threads":
+              case "thread":
                 return new _thread2["default"](client, id);
 
-              case "messages":
+              case "message":
                 return new _message2["default"](client, id);
 
               default:
-                return new _resource2["default"](client, singularName, id);
+                return new _resource2["default"](client, resourceType, id);
             }
         }
-        function createCollection(client, name) {
+        function createCollection(client, resourceType) {
             switch (name) {
-              case "users":
-                return new _user.UserCollection(client, name);
+              case "user":
+                return new _user.UserCollection(client, (0, _pluralize2["default"])(resourceType));
 
               default:
-                return new _collection2["default"](client, name);
+                return new _collection2["default"](client, (0, _pluralize2["default"])(resourceType));
             }
         }
-        function makeCollection(client, collectionName) {
-            var collection = createCollection(client, collectionName), documentFn = function(id) {
-                return id ? makeResource(client, collectionName, id) : collection;
+        function makeCollection(client, resourceType) {
+            var collection = createCollection(client, resourceType), documentFn = function(id) {
+                return id ? makeResource(client, resourceType, id) : collection;
             }, _iteratorNormalCompletion = !0, _didIteratorError = !1, _iteratorError = void 0;
             try {
                 for (var _step, _iterator = Object.getOwnPropertyNames(Object.getPrototypeOf(collection))[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = !0) {
-                    var name = _step.value, method = collection[name];
-                    _lodash2["default"].isFunction(method) && (documentFn[name] = collection[name].bind(collection));
+                    var _name = _step.value, method = collection[_name];
+                    _lodash2["default"].isFunction(method) && (documentFn[_name] = collection[_name].bind(collection));
                 }
             } catch (err) {
                 _didIteratorError = !0, _iteratorError = err;
@@ -10670,7 +10670,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _resource = __webpack_require__(1), _resource2 = _interopRequireDefault(_resource), _user = __webpack_require__(17), _channel = __webpack_require__(11), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(16), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(14), _message2 = _interopRequireDefault(_message), _collection = __webpack_require__(3), _collection2 = _interopRequireDefault(_collection), _mimeType = __webpack_require__(15), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(9), _urlJoin2 = _interopRequireDefault(_urlJoin), _lodash = __webpack_require__(7), _lodash2 = _interopRequireDefault(_lodash);
+        }(), _resource = __webpack_require__(1), _resource2 = _interopRequireDefault(_resource), _user = __webpack_require__(17), _channel = __webpack_require__(11), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(16), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(14), _message2 = _interopRequireDefault(_message), _collection = __webpack_require__(3), _collection2 = _interopRequireDefault(_collection), _mimeType = __webpack_require__(15), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(9), _urlJoin2 = _interopRequireDefault(_urlJoin), _pluralize = __webpack_require__(38), _pluralize2 = _interopRequireDefault(_pluralize), _lodash = __webpack_require__(7), _lodash2 = _interopRequireDefault(_lodash);
         __webpack_require__(21).polyfill(), __webpack_require__(23);
         var defaultOptions = {
             endpoint: "",
@@ -10679,9 +10679,8 @@
             function HubClient() {
                 var options = arguments.length <= 0 || void 0 === arguments[0] ? defaultOptions : arguments[0];
                 _classCallCheck(this, HubClient), this.options = options, this.token = options.token, 
-                this.endpoint = options.endpoint, this.users = makeCollection(this, "user", "users"), 
-                this.channels = makeCollection(this, "channel", "channels"), this.threads = makeCollection(this, "thread", "threads"), 
-                this.messages = makeCollection(this, "message", "messages");
+                this.endpoint = options.endpoint, this.users = makeCollection(this, "user"), this.channels = makeCollection(this, "channel"), 
+                this.threads = makeCollection(this, "thread"), this.messages = makeCollection(this, "message");
             }
             return _createClass(HubClient, [ {
                 key: "absurl",
@@ -10761,7 +10760,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _eventemitter = __webpack_require__(22), _eventemitter2 = _interopRequireDefault(_eventemitter), _callbackQueue = __webpack_require__(18), _callbackQueue2 = _interopRequireDefault(_callbackQueue), _urlJoin = __webpack_require__(9), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(38), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(7), _lodash2 = _interopRequireDefault(_lodash), EventStream = function(_EventEmitter) {
+        }(), _eventemitter = __webpack_require__(22), _eventemitter2 = _interopRequireDefault(_eventemitter), _callbackQueue = __webpack_require__(18), _callbackQueue2 = _interopRequireDefault(_callbackQueue), _urlJoin = __webpack_require__(9), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(39), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(7), _lodash2 = _interopRequireDefault(_lodash), EventStream = function(_EventEmitter) {
             function EventStream(options) {
                 _classCallCheck(this, EventStream);
                 var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventStream).call(this));
@@ -11315,7 +11314,7 @@
                 }
                 function lib$es6$promise$asap$$attemptVertx() {
                     try {
-                        var vertx = __webpack_require__(43);
+                        var vertx = __webpack_require__(44);
                         return lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext, 
                         lib$es6$promise$asap$$useVertxTimer();
                     } catch (e) {
@@ -11867,7 +11866,7 @@
                     polyfill: lib$es6$promise$polyfill$$default
                 };
                 /* global define:true module:true window: true */
-                __webpack_require__(41).amd ? (__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+                __webpack_require__(42).amd ? (__WEBPACK_AMD_DEFINE_RESULT__ = function() {
                     return lib$es6$promise$umd$$ES6Promise;
                 }.call(exports, __webpack_require__, exports, module), !(void 0 !== __WEBPACK_AMD_DEFINE_RESULT__ && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))) : "undefined" != typeof module && module.exports ? module.exports = lib$es6$promise$umd$$ES6Promise : "undefined" != typeof this && (this.ES6Promise = lib$es6$promise$umd$$ES6Promise), 
                 lib$es6$promise$polyfill$$default();
@@ -12056,7 +12055,7 @@
         // on the global object (window or self)
         //
         // Return that as the export for use in Webpack, Browserify etc.
-        __webpack_require__(42), module.exports = self.fetch.bind(self);
+        __webpack_require__(43), module.exports = self.fetch.bind(self);
     }, /* 24 */
     /***/
     function(module, exports) {
@@ -12884,8 +12883,192 @@
     }, /* 38 */
     /***/
     function(module, exports, __webpack_require__) {
+        /* global define */
+        !function(root, pluralize) {
+            // Node.
+            module.exports = pluralize();
+        }(this, function() {
+            /**
+	   * Title case a string.
+	   *
+	   * @param  {string} str
+	   * @return {string}
+	   */
+            function toTitleCase(str) {
+                return str.charAt(0).toUpperCase() + str.substr(1).toLowerCase();
+            }
+            /**
+	   * Sanitize a pluralization rule to a usable regular expression.
+	   *
+	   * @param  {(RegExp|string)} rule
+	   * @return {RegExp}
+	   */
+            function sanitizeRule(rule) {
+                return "string" == typeof rule ? new RegExp("^" + rule + "$", "i") : rule;
+            }
+            /**
+	   * Pass in a word token to produce a function that can replicate the case on
+	   * another word.
+	   *
+	   * @param  {string}   word
+	   * @param  {string}   token
+	   * @return {Function}
+	   */
+            function restoreCase(word, token) {
+                // Upper cased words. E.g. "HELLO".
+                // Upper cased words. E.g. "HELLO".
+                // Title cased words. E.g. "Title".
+                return word === word.toUpperCase() ? token.toUpperCase() : word[0] === word[0].toUpperCase() ? toTitleCase(token) : token.toLowerCase();
+            }
+            /**
+	   * Interpolate a regexp string.
+	   *
+	   * @param  {string} str
+	   * @param  {Array}  args
+	   * @return {string}
+	   */
+            function interpolate(str, args) {
+                return str.replace(/\$(\d{1,2})/g, function(match, index) {
+                    return args[index] || "";
+                });
+            }
+            /**
+	   * Sanitize a word by passing in the word and sanitization rules.
+	   *
+	   * @param  {String}   token
+	   * @param  {String}   word
+	   * @param  {Array}    collection
+	   * @return {String}
+	   */
+            function sanitizeWord(token, word, collection) {
+                // Empty string or doesn't need fixing.
+                if (!token.length || uncountables.hasOwnProperty(token)) return word;
+                // Iterate over the sanitization rules and use the first one to match.
+                for (var len = collection.length; len--; ) {
+                    var rule = collection[len];
+                    // If the rule passes, return the replacement.
+                    if (rule[0].test(word)) return word.replace(rule[0], function(match, index, word) {
+                        var result = interpolate(rule[1], arguments);
+                        return "" === match ? restoreCase(word[index - 1], result) : restoreCase(match, result);
+                    });
+                }
+                return word;
+            }
+            /**
+	   * Replace a word with the updated word.
+	   *
+	   * @param  {Object}   replaceMap
+	   * @param  {Object}   keepMap
+	   * @param  {Array}    rules
+	   * @return {Function}
+	   */
+            function replaceWord(replaceMap, keepMap, rules) {
+                return function(word) {
+                    // Get the correct token and case restoration functions.
+                    var token = word.toLowerCase();
+                    // Check against the keep object map.
+                    // Check against the keep object map.
+                    // Check against the replacement map for a direct word replacement.
+                    return keepMap.hasOwnProperty(token) ? restoreCase(word, token) : replaceMap.hasOwnProperty(token) ? restoreCase(word, replaceMap[token]) : sanitizeWord(token, word, rules);
+                };
+            }
+            /**
+	   * Pluralize or singularize a word based on the passed in count.
+	   *
+	   * @param  {String}  word
+	   * @param  {Number}  count
+	   * @param  {Boolean} inclusive
+	   * @return {String}
+	   */
+            function pluralize(word, count, inclusive) {
+                var pluralized = 1 === count ? pluralize.singular(word) : pluralize.plural(word);
+                return (inclusive ? count + " " : "") + pluralized;
+            }
+            // Rule storage - pluralize and singularize need to be run sequentially,
+            // while other rules can be optimized using an object for instant lookups.
+            var pluralRules = [], singularRules = [], uncountables = {}, irregularPlurals = {}, irregularSingles = {};
+            /**
+	   * Pluralize a word.
+	   *
+	   * @type {Function}
+	   */
+            /**
+	   * Singularize a word.
+	   *
+	   * @type {Function}
+	   */
+            /**
+	   * Add a pluralization rule to the collection.
+	   *
+	   * @param {(string|RegExp)} rule
+	   * @param {string}          replacement
+	   */
+            /**
+	   * Add a singularization rule to the collection.
+	   *
+	   * @param {(string|RegExp)} rule
+	   * @param {string}          replacement
+	   */
+            /**
+	   * Add an uncountable word rule.
+	   *
+	   * @param {(string|RegExp)} word
+	   */
+            /**
+	   * Add an irregular word definition.
+	   *
+	   * @param {String} single
+	   * @param {String} plural
+	   */
+            /**
+	   * Irregular rules.
+	   */
+            /**
+	   * Pluralization rules.
+	   */
+            /**
+	   * Singularization rules.
+	   */
+            /**
+	   * Uncountable rules.
+	   */
+            return pluralize.plural = replaceWord(irregularSingles, irregularPlurals, pluralRules), 
+            pluralize.singular = replaceWord(irregularPlurals, irregularSingles, singularRules), 
+            pluralize.addPluralRule = function(rule, replacement) {
+                pluralRules.push([ sanitizeRule(rule), replacement ]);
+            }, pluralize.addSingularRule = function(rule, replacement) {
+                singularRules.push([ sanitizeRule(rule), replacement ]);
+            }, pluralize.addUncountableRule = function(word) {
+                // Set singular and plural references for the word.
+                return "string" == typeof word ? void (uncountables[word.toLowerCase()] = !0) : (pluralize.addPluralRule(word, "$0"), 
+                void pluralize.addSingularRule(word, "$0"));
+            }, pluralize.addIrregularRule = function(single, plural) {
+                plural = plural.toLowerCase(), single = single.toLowerCase(), irregularSingles[single] = plural, 
+                irregularPlurals[plural] = single;
+            }, [ // Pronouns.
+            [ "I", "we" ], [ "me", "us" ], [ "he", "they" ], [ "she", "they" ], [ "them", "them" ], [ "myself", "ourselves" ], [ "yourself", "yourselves" ], [ "itself", "themselves" ], [ "herself", "themselves" ], [ "himself", "themselves" ], [ "themself", "themselves" ], [ "is", "are" ], [ "this", "these" ], [ "that", "those" ], // Words ending in with a consonant and `o`.
+            [ "echo", "echoes" ], [ "dingo", "dingoes" ], [ "volcano", "volcanoes" ], [ "tornado", "tornadoes" ], [ "torpedo", "torpedoes" ], // Ends with `us`.
+            [ "genus", "genera" ], [ "viscus", "viscera" ], // Ends with `ma`.
+            [ "stigma", "stigmata" ], [ "stoma", "stomata" ], [ "dogma", "dogmata" ], [ "lemma", "lemmata" ], [ "schema", "schemata" ], [ "anathema", "anathemata" ], // Other irregular rules.
+            [ "ox", "oxen" ], [ "axe", "axes" ], [ "die", "dice" ], [ "yes", "yeses" ], [ "foot", "feet" ], [ "eave", "eaves" ], [ "goose", "geese" ], [ "tooth", "teeth" ], [ "quiz", "quizzes" ], [ "human", "humans" ], [ "proof", "proofs" ], [ "carve", "carves" ], [ "valve", "valves" ], [ "thief", "thieves" ], [ "genie", "genies" ], [ "groove", "grooves" ], [ "pickaxe", "pickaxes" ], [ "whiskey", "whiskies" ] ].forEach(function(rule) {
+                return pluralize.addIrregularRule(rule[0], rule[1]);
+            }), [ [ /s?$/i, "s" ], [ /([^aeiou]ese)$/i, "$1" ], [ /(ax|test)is$/i, "$1es" ], [ /(alias|[^aou]us|tlas|gas|ris)$/i, "$1es" ], [ /(e[mn]u)s?$/i, "$1s" ], [ /([^l]ias|[aeiou]las|[emjzr]as|[iu]am)$/i, "$1" ], [ /(alumn|syllab|octop|vir|radi|nucle|fung|cact|stimul|termin|bacill|foc|uter|loc|strat)(?:us|i)$/i, "$1i" ], [ /(alumn|alg|vertebr)(?:a|ae)$/i, "$1ae" ], [ /(seraph|cherub)(?:im)?$/i, "$1im" ], [ /(her|at|gr)o$/i, "$1oes" ], [ /(agend|addend|millenni|dat|extrem|bacteri|desiderat|strat|candelabr|errat|ov|symposi|curricul|automat|quor)(?:a|um)$/i, "$1a" ], [ /(apheli|hyperbat|periheli|asyndet|noumen|phenomen|criteri|organ|prolegomen|hedr|automat)(?:a|on)$/i, "$1a" ], [ /sis$/i, "ses" ], [ /(?:(kni|wi|li)fe|(ar|l|ea|eo|oa|hoo)f)$/i, "$1$2ves" ], [ /([^aeiouy]|qu)y$/i, "$1ies" ], [ /([^ch][ieo][ln])ey$/i, "$1ies" ], [ /(x|ch|ss|sh|zz)$/i, "$1es" ], [ /(matr|cod|mur|sil|vert|ind|append)(?:ix|ex)$/i, "$1ices" ], [ /(m|l)(?:ice|ouse)$/i, "$1ice" ], [ /(pe)(?:rson|ople)$/i, "$1ople" ], [ /(child)(?:ren)?$/i, "$1ren" ], [ /eaux$/i, "$0" ], [ /m[ae]n$/i, "men" ], [ "thou", "you" ] ].forEach(function(rule) {
+                return pluralize.addPluralRule(rule[0], rule[1]);
+            }), [ [ /s$/i, "" ], [ /(ss)$/i, "$1" ], [ /((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)(?:sis|ses)$/i, "$1sis" ], [ /(^analy)(?:sis|ses)$/i, "$1sis" ], [ /(wi|kni|(?:after|half|high|low|mid|non|night|[^\w]|^)li)ves$/i, "$1fe" ], [ /(ar|(?:wo|[ae])l|[eo][ao])ves$/i, "$1f" ], [ /([^aeiouy]|qu)ies$/i, "$1y" ], [ /(^[pl]|zomb|^(?:neck)?t|[aeo][lt]|cut)ies$/i, "$1ie" ], [ /(\b(?:mon|smil))ies$/i, "$1ey" ], [ /(m|l)ice$/i, "$1ouse" ], [ /(seraph|cherub)im$/i, "$1" ], [ /(x|ch|ss|sh|zz|tto|go|cho|alias|[^aou]us|tlas|gas|(?:her|at|gr)o|ris)(?:es)?$/i, "$1" ], [ /(e[mn]u)s?$/i, "$1" ], [ /(movie|twelve)s$/i, "$1" ], [ /(cris|test|diagnos)(?:is|es)$/i, "$1is" ], [ /(alumn|syllab|octop|vir|radi|nucle|fung|cact|stimul|termin|bacill|foc|uter|loc|strat)(?:us|i)$/i, "$1us" ], [ /(agend|addend|millenni|dat|extrem|bacteri|desiderat|strat|candelabr|errat|ov|symposi|curricul|quor)a$/i, "$1um" ], [ /(apheli|hyperbat|periheli|asyndet|noumen|phenomen|criteri|organ|prolegomen|hedr|automat)a$/i, "$1on" ], [ /(alumn|alg|vertebr)ae$/i, "$1a" ], [ /(cod|mur|sil|vert|ind)ices$/i, "$1ex" ], [ /(matr|append)ices$/i, "$1ix" ], [ /(pe)(rson|ople)$/i, "$1rson" ], [ /(child)ren$/i, "$1" ], [ /(eau)x?$/i, "$1" ], [ /men$/i, "man" ] ].forEach(function(rule) {
+                return pluralize.addSingularRule(rule[0], rule[1]);
+            }), [ // Singular words with no plurals.
+            "advice", "agenda", "bison", "bream", "buffalo", "carp", "chassis", "cod", "cooperation", "corps", "digestion", "debris", "diabetes", "energy", "equipment", "elk", "excretion", "expertise", "flounder", "gallows", "garbage", "graffiti", "headquarters", "health", "herpes", "highjinks", "homework", "information", "jeans", "justice", "kudos", "labour", "machinery", "mackerel", "media", "mews", "moose", "news", "pike", "plankton", "pliers", "pollution", "premises", "rain", "rice", "salmon", "scissors", "series", "sewage", "shambles", "shrimp", "species", "staff", "swine", "trout", "tuna", "whiting", "wildebeest", "wildlife", "you", // Regexes.
+            /pox$/i, // "chickpox", "smallpox"
+            /ois$/i, /deer$/i, // "deer", "reindeer"
+            /fish$/i, // "fish", "blowfish", "angelfish"
+            /sheep$/i, /measles$/i, /[^aeiou]ese$/i ].forEach(pluralize.addUncountableRule), 
+            pluralize;
+        });
+    }, /* 39 */
+    /***/
+    function(module, exports, __webpack_require__) {
         "use strict";
-        var strictUriEncode = __webpack_require__(39);
+        var strictUriEncode = __webpack_require__(40);
         exports.extract = function(str) {
             return str.split("?")[1] || "";
         }, exports.parse = function(str) {
@@ -12906,7 +13089,7 @@
                 return x.length > 0;
             }).join("&") : "";
         };
-    }, /* 39 */
+    }, /* 40 */
     /***/
     function(module, exports) {
         "use strict";
@@ -12915,7 +13098,7 @@
                 return "%" + c.charCodeAt(0).toString(16).toUpperCase();
             });
         };
-    }, /* 40 */
+    }, /* 41 */
     /***/
     function(module, exports) {
         function cleanUpNextTick() {
@@ -12959,13 +13142,13 @@
         }, process.umask = function() {
             return 0;
         };
-    }, /* 41 */
+    }, /* 42 */
     /***/
     function(module, exports) {
         module.exports = function() {
             throw new Error("define cannot be used indirect");
         };
-    }, /* 42 */
+    }, /* 43 */
     /***/
     function(module, exports) {
         !function(self) {
@@ -13161,7 +13344,7 @@
                 }, self.fetch.polyfill = !0;
             }
         }("undefined" != typeof self ? self : this);
-    }, /* 43 */
+    }, /* 44 */
     /***/
     function(module, exports) {} ]);
 });

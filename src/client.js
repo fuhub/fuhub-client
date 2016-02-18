@@ -8,37 +8,38 @@ import Message from './message';
 import ResourceCollection from './collection';
 import mimeType from './mimeType';
 import urljoin from 'url-join';
+import pluralize from 'pluralize';
 import _ from 'lodash';
 
-function makeResource(client, singularName, collectionName, id) {
-	switch (collectionName.toLowerCase()) {
-	case 'users':
+function makeResource(client, resourceType, id) {
+	switch (resourceType.toLowerCase()) {
+	case 'user':
 		return new User(client, id);
-	case 'channels':
+	case 'channel':
 		return new Channel(client, id);
-	case 'threads':
+	case 'thread':
 		return new Thread(client, id);
-	case 'messages':
+	case 'message':
 		return new Message(client, id);
 	default:
-		return new Resource(client, singularName, id);
+		return new Resource(client, resourceType, id);
 	}
 }
 
-function createCollection(client, name) {
+function createCollection(client, resourceType) {
 	switch (name) {
-	case 'users':
-		return new UserCollection(client, name);
+	case 'user':
+		return new UserCollection(client, pluralize(resourceType));
 	default:
-		return new ResourceCollection(client, name);
+		return new ResourceCollection(client, pluralize(resourceType));
 	}
 }
 
-function makeCollection(client, collectionName) {
-	const collection = createCollection(client, collectionName);
+function makeCollection(client, resourceType) {
+	const collection = createCollection(client, resourceType);
 	const documentFn = function (id) {
 		if (!id) return collection;
-		return makeResource(client, collectionName, id);
+		return makeResource(client, resourceType, id);
 	};
 
 	// extend documentFn with collection API to reduce mistakes
@@ -62,10 +63,10 @@ export default class HubClient {
 		this.options = options;
 		this.token = options.token;
 		this.endpoint = options.endpoint;
-		this.users = makeCollection(this, 'user', 'users');
-		this.channels = makeCollection(this, 'channel', 'channels');
-		this.threads = makeCollection(this, 'thread', 'threads');
-		this.messages = makeCollection(this, 'message', 'messages');
+		this.users = makeCollection(this, 'user');
+		this.channels = makeCollection(this, 'channel');
+		this.threads = makeCollection(this, 'thread');
+		this.messages = makeCollection(this, 'message');
 	}
 
 	absurl(url) {
