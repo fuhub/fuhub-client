@@ -4,6 +4,9 @@ import urljoin from 'url-join';
 import queryString from 'query-string';
 import _ from 'lodash';
 
+// TODO use generators to ensure hronological order of events
+
+// Event stream from global channel or specific channels.
 export default class EventStream extends EventEmitter {
 	constructor(options) {
 		super();
