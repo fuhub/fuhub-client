@@ -1,10 +1,12 @@
 import EventEmitter from 'eventemitter3';
-import callbackQueue from 'callback-queue';
+import EventSource from 'eventsource';
+// TODO remove dependency on callback-queue
+// import callbackQueue from 'callback-queue';
 import urljoin from 'url-join';
 import queryString from 'query-string';
 import _ from 'lodash';
 
-// TODO use generators to ensure hronological order of events
+// TODO idea: use generators to ensure hronological order of events
 
 // Event stream from global channel or specific channels.
 export default class EventStream extends EventEmitter {
@@ -56,9 +58,11 @@ export default class EventStream extends EventEmitter {
 			data = id;
 		}
 		const self = this;
-		const cb = callbackQueue.add(e.id, () => {
-			self.emit(eventType, data);
-		});
-		cb();
+		self.emit(eventType, data);
+		// TODO deal with order of events to avoid async side-effects in application
+		// const cb = callbackQueue.add(e.id, () => {
+		// 	self.emit(eventType, data);
+		// });
+		// cb();
 	}
 }
