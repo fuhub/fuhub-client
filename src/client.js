@@ -27,7 +27,7 @@ function makeResource(client, resourceType, id) {
 }
 
 function createCollection(client, resourceType) {
-	switch (name) {
+	switch (resourceType) {
 	case 'user':
 		return new UserCollection(client, pluralize(resourceType));
 	default:
