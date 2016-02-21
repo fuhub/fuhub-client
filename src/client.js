@@ -11,6 +11,7 @@ import mimeType from './mimeType';
 import urljoin from 'url-join';
 import pluralize from 'pluralize';
 import { makeAuthorizationHeader } from './auth';
+import { getToken } from './store';
 import _ from 'lodash';
 
 function makeResource(client, resourceType, id) {
@@ -63,6 +64,12 @@ const defaultOptions = {
 export default class Client extends EventEmitter {
 	constructor(options = defaultOptions) {
 		super();
+
+		// get token from local storage
+		if (!(options.username && options.password) && !options.token) {
+			options.token = getToken(); // eslint-disable-line
+		}
+
 		this.options = options;
 		this.auth = makeAuthorizationHeader(options);
 		this.endpoint = options.endpoint;
