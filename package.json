@@ -1,10 +1,11 @@
 {
   "name": "fuhub-client",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "hub client",
   "main": "lib/index.js",
   "scripts": {
-    "test": "mocha"
+    "lint": "eslint src",
+    "test": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -50,9 +51,5 @@
     "webpack": "^1.12.13",
     "webpack-dev-middleware": "^1.5.1",
     "webpack-hot-middleware": "^2.7.1"
-  },
-  "scripts": {
-    "lint": "eslint src",
-    "test": "npm run lint"
   }
 }
