@@ -11,7 +11,7 @@ import mimeType from './mimeType';
 import urljoin from 'url-join';
 import pluralize from 'pluralize';
 import { makeAuthorizationHeader } from './auth';
-import { getToken } from './store';
+import { getToken, setToken } from './store';
 import _ from 'lodash';
 
 function makeResource(client, resourceType, id) {
@@ -64,14 +64,7 @@ const defaultOptions = {
 export default class Client extends EventEmitter {
 	constructor(options = defaultOptions) {
 		super();
-
-		// get token from local storage
-		if (!(options.username && options.password) && !options.token) {
-			options.token = getToken(); // eslint-disable-line
-		}
-
 		this.options = options;
-		this.auth = makeAuthorizationHeader(options);
 		this.endpoint = options.endpoint;
 		this.users = makeCollection(this, 'user');
 		this.channels = makeCollection(this, 'channel');
@@ -91,10 +84,23 @@ export default class Client extends EventEmitter {
 		this.emit('error', err);
 	}
 
+	makeAuth() {
+		if (this.options.token || this.options.username) {
+			return makeAuthorizationHeader(this.options);
+		}
+		// get token from local storage
+		const options = { token: getToken() };
+		return makeAuthorizationHeader(options);
+	}
+
 	fetchJSON(path, options = {}) {
+		if (_.isObject(options.body)) {
+			options.body = JSON.stringify(options.body); // eslint-disable-line
+		}
+		const auth = this.makeAuth();
 		const opts = {
 			headers: {
-				Authorization: this.auth,
+				Authorization: auth,
 				Accept: mimeType.json,
 			},
 			...options,
@@ -110,16 +116,10 @@ export default class Client extends EventEmitter {
 	}
 
 	postJSON(path, body, extra = {}) {
-		if (_.isObject(body)) {
-			body = JSON.stringify(body); // eslint-disable-line
-		}
 		return this.fetchJSON(path, { method: 'post', body, ...extra });
 	}
 
 	putJSON(path, body, extra = {}) {
-		if (_.isObject(body)) {
-			body = JSON.stringify(body); // eslint-disable-line
-		}
 		return this.fetchJSON(path, { method: 'put', body, ...extra });
 	}
 
@@ -132,7 +132,10 @@ export default class Client extends EventEmitter {
 	}
 
 	login(payload) {
-		return this.postJSON('/api/login', payload);
+		return this.postJSON('/api/login', payload).then(token => {
+			setToken(token);
+			return token;
+		});
 	}
 
 	logout() {

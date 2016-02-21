@@ -87,9 +87,10 @@
         }
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.setToken = exports.getToken = exports.EventStream = exports.Client = void 0, 
+        }), exports.setToken = exports.getToken = exports.EventStream = exports.Client = exports.API = void 0, 
         exports.initSession = initSession;
         var _client = __webpack_require__(27), _client2 = _interopRequireDefault(_client), _eventstream = __webpack_require__(28), _eventstream2 = _interopRequireDefault(_eventstream), _store = __webpack_require__(14), _lodash = __webpack_require__(9), _lodash2 = _interopRequireDefault(_lodash);
+        exports.API = new _client2["default"]();
         exports.Client = _client2["default"], exports.EventStream = _eventstream2["default"], 
         exports.getToken = _store.getToken, exports.setToken = _store.setToken, exports["default"] = _client2["default"];
     }, /* 1 */
@@ -13566,11 +13567,8 @@
             function Client() {
                 var options = arguments.length <= 0 || void 0 === arguments[0] ? defaultOptions : arguments[0];
                 _classCallCheck(this, Client);
-                // get token from local storage
                 var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Client).call(this));
-                return options.username && options.password || options.token || (options.token = (0, 
-                _store.getToken)()), _this.options = options, _this.auth = (0, _auth.makeAuthorizationHeader)(options), 
-                _this.endpoint = options.endpoint, _this.users = makeCollection(_this, "user"), 
+                return _this.options = options, _this.endpoint = options.endpoint, _this.users = makeCollection(_this, "user"), 
                 _this.channels = makeCollection(_this, "channel"), _this.threads = makeCollection(_this, "thread"), 
                 _this.messages = makeCollection(_this, "message"), _this;
             }
@@ -13585,11 +13583,23 @@
                     return _lodash2["default"].isFunction(this.onError) ? void this.onError(err) : void this.emit("error", err);
                 }
             }, {
+                key: "makeAuth",
+                value: function() {
+                    if (this.options.token || this.options.username) return (0, _auth.makeAuthorizationHeader)(this.options);
+                    // get token from local storage
+                    var options = {
+                        token: (0, _store.getToken)()
+                    };
+                    return (0, _auth.makeAuthorizationHeader)(options);
+                }
+            }, {
                 key: "fetchJSON",
                 value: function(path) {
-                    var _this2 = this, options = arguments.length <= 1 || void 0 === arguments[1] ? {} : arguments[1], opts = _extends({
+                    var _this2 = this, options = arguments.length <= 1 || void 0 === arguments[1] ? {} : arguments[1];
+                    _lodash2["default"].isObject(options.body) && (options.body = JSON.stringify(options.body));
+                    var auth = this.makeAuth(), opts = _extends({
                         headers: {
-                            Authorization: this.auth,
+                            Authorization: auth,
                             Accept: _mimeType2["default"].json
                         }
                     }, options), onSuccess = function(response) {
@@ -13605,7 +13615,7 @@
                 key: "postJSON",
                 value: function(path, body) {
                     var extra = arguments.length <= 2 || void 0 === arguments[2] ? {} : arguments[2];
-                    return _lodash2["default"].isObject(body) && (body = JSON.stringify(body)), this.fetchJSON(path, _extends({
+                    return this.fetchJSON(path, _extends({
                         method: "post",
                         body: body
                     }, extra));
@@ -13614,7 +13624,7 @@
                 key: "putJSON",
                 value: function(path, body) {
                     var extra = arguments.length <= 2 || void 0 === arguments[2] ? {} : arguments[2];
-                    return _lodash2["default"].isObject(body) && (body = JSON.stringify(body)), this.fetchJSON(path, _extends({
+                    return this.fetchJSON(path, _extends({
                         method: "put",
                         body: body
                     }, extra));
@@ -13634,7 +13644,9 @@
             }, {
                 key: "login",
                 value: function(payload) {
-                    return this.postJSON("/api/login", payload);
+                    return this.postJSON("/api/login", payload).then(function(token) {
+                        return (0, _store.setToken)(token), token;
+                    });
                 }
             }, {
                 key: "logout",

@@ -17,6 +17,8 @@ export function initSession(init, showLogin) {
 	});
 }
 
+export const API = new Client();
+
 export {
 	Client,
 	EventStream,
