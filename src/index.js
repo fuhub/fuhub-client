@@ -17,6 +17,10 @@ export function initSession(init, showLogin) {
 	});
 }
 
+export function isLoggedIn() {
+	return (getToken() || '').length > 0;
+}
+
 export const API = new Client();
 
 export {

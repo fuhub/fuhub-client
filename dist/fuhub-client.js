@@ -85,10 +85,13 @@
                 _lodash2["default"].isFunction(showLogin) && showLogin();
             });
         }
+        function isLoggedIn() {
+            return ((0, _store.getToken)() || "").length > 0;
+        }
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.setToken = exports.getToken = exports.EventStream = exports.Client = exports.API = void 0, 
-        exports.initSession = initSession;
+        exports.initSession = initSession, exports.isLoggedIn = isLoggedIn;
         var _client = __webpack_require__(27), _client2 = _interopRequireDefault(_client), _eventstream = __webpack_require__(28), _eventstream2 = _interopRequireDefault(_eventstream), _store = __webpack_require__(14), _lodash = __webpack_require__(9), _lodash2 = _interopRequireDefault(_lodash);
         exports.API = new _client2["default"]();
         exports.Client = _client2["default"], exports.EventStream = _eventstream2["default"], 
