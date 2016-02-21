@@ -64,7 +64,6 @@ export default class Client extends EventEmitter {
 	constructor(options = defaultOptions) {
 		super();
 		this.options = options;
-		this.token = options.token;
 		this.auth = makeAuthorizationHeader(options);
 		this.endpoint = options.endpoint;
 		this.users = makeCollection(this, 'user');

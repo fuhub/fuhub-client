@@ -13543,7 +13543,7 @@
                 var options = arguments.length <= 0 || void 0 === arguments[0] ? defaultOptions : arguments[0];
                 _classCallCheck(this, Client);
                 var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Client).call(this));
-                return _this.options = options, _this.token = options.token, _this.auth = (0, _auth.makeAuthorizationHeader)(options), 
+                return _this.options = options, _this.auth = (0, _auth.makeAuthorizationHeader)(options), 
                 _this.endpoint = options.endpoint, _this.users = makeCollection(_this, "user"), 
                 _this.channels = makeCollection(_this, "channel"), _this.threads = makeCollection(_this, "thread"), 
                 _this.messages = makeCollection(_this, "message"), _this;
