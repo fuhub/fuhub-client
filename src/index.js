@@ -1,9 +1,9 @@
-import HubClient from './client';
+import Client from './client';
 import EventStream from './eventstream';
 
 export {
-	HubClient,
+	Client,
 	EventStream,
 };
 
-export default HubClient;
+export default Client;

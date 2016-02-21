@@ -1,5 +1,6 @@
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
+import EventEmitter from 'eventemitter3';
 import Resource from './resource';
 import { User, UserCollection } from './user';
 import Channel from './channel';
@@ -9,6 +10,7 @@ import ResourceCollection from './collection';
 import mimeType from './mimeType';
 import urljoin from 'url-join';
 import pluralize from 'pluralize';
+import { makeAuthorizationHeader } from './auth';
 import _ from 'lodash';
 
 function makeResource(client, resourceType, id) {
@@ -58,10 +60,12 @@ const defaultOptions = {
 	token: '',
 };
 
-export default class HubClient {
+export default class Client extends EventEmitter {
 	constructor(options = defaultOptions) {
+		super();
 		this.options = options;
 		this.token = options.token;
+		this.auth = makeAuthorizationHeader(options);
 		this.endpoint = options.endpoint;
 		this.users = makeCollection(this, 'user');
 		this.channels = makeCollection(this, 'channel');
@@ -73,23 +77,59 @@ export default class HubClient {
 		return this.endpoint ? urljoin(this.endpoint, url) : url;
 	}
 
-	fetchJSON(url, options = {}) {
+	emitError(err) {
+		if (_.isFunction(this.onError)) {
+			this.onError(err);
+			return;
+		}
+		this.emit('error', err);
+	}
+
+	fetchJSON(path, options = {}) {
 		const opts = {
 			headers: {
-				// TODO support basic auth
-				Authorization: `Bearer  ${this.token}`,
+				Authorization: this.auth,
 				Accept: mimeType.json,
 			},
 			...options,
 		};
-		return fetch(this.absurl(url), opts).then(response => response.json());
+		const onSuccess = response => {
+			if (response.status === 401) {
+				this.emitError({ type: 'unauthorized' });
+				return Promise.reject('unauthorized');
+			}
+			return response.json();
+		};
+		return fetch(this.absurl(path), opts).then(onSuccess, err => this.emitError(err));
+	}
+
+	postJSON(path, body, extra = {}) {
+		if (_.isObject(body)) {
+			body = JSON.stringify(body); // eslint-disable-line
+		}
+		return this.fetchJSON(path, { method: 'post', body, ...extra });
+	}
+
+	putJSON(path, body, extra = {}) {
+		if (_.isObject(body)) {
+			body = JSON.stringify(body); // eslint-disable-line
+		}
+		return this.fetchJSON(path, { method: 'put', body, ...extra });
 	}
 
 	delete(url) {
 		return this.fetchJSON(url, { method: 'delete' });
 	}
 
+	token() {
+		return this.fetchJSON('/api/token');
+	}
+
+	login(payload) {
+		return this.postJSON('/api/login', payload);
+	}
+
 	logout() {
-		return this.fetchJSON('/api/logout', { method: 'post' });
+		return this.postJSON('/api/logout', {});
 	}
 }

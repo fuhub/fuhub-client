@@ -79,9 +79,9 @@
         }
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.EventStream = exports.HubClient = void 0;
-        var _client = __webpack_require__(24), _client2 = _interopRequireDefault(_client), _eventstream = __webpack_require__(25), _eventstream2 = _interopRequireDefault(_eventstream);
-        exports.HubClient = _client2["default"], exports.EventStream = _eventstream2["default"], 
+        }), exports.EventStream = exports.Client = void 0;
+        var _client = __webpack_require__(26), _client2 = _interopRequireDefault(_client), _eventstream = __webpack_require__(27), _eventstream2 = _interopRequireDefault(_eventstream);
+        exports.Client = _client2["default"], exports.EventStream = _eventstream2["default"], 
         exports["default"] = _client2["default"];
     }, /* 1 */
     /***/
@@ -155,116 +155,12 @@
             }, util = __webpack_require__(6);
             util.inherits = __webpack_require__(1);
             /*</replacement>*/
-            var Readable = __webpack_require__(16), Writable = __webpack_require__(10);
+            var Readable = __webpack_require__(17), Writable = __webpack_require__(10);
             util.inherits(Duplex, Readable), forEach(objectKeys(Writable.prototype), function(method) {
                 Duplex.prototype[method] || (Duplex.prototype[method] = Writable.prototype[method]);
             });
-        }).call(exports, __webpack_require__(3));
+        }).call(exports, __webpack_require__(4));
     }, /* 3 */
-    /***/
-    function(module, exports) {
-        function cleanUpNextTick() {
-            draining = !1, currentQueue.length ? queue = currentQueue.concat(queue) : queueIndex = -1, 
-            queue.length && drainQueue();
-        }
-        function drainQueue() {
-            if (!draining) {
-                var timeout = setTimeout(cleanUpNextTick);
-                draining = !0;
-                for (var len = queue.length; len; ) {
-                    for (currentQueue = queue, queue = []; ++queueIndex < len; ) currentQueue && currentQueue[queueIndex].run();
-                    queueIndex = -1, len = queue.length;
-                }
-                currentQueue = null, draining = !1, clearTimeout(timeout);
-            }
-        }
-        // v8 likes predictible objects
-        function Item(fun, array) {
-            this.fun = fun, this.array = array;
-        }
-        function noop() {}
-        // shim for using process in browser
-        var currentQueue, process = module.exports = {}, queue = [], draining = !1, queueIndex = -1;
-        process.nextTick = function(fun) {
-            var args = new Array(arguments.length - 1);
-            if (arguments.length > 1) for (var i = 1; i < arguments.length; i++) args[i - 1] = arguments[i];
-            queue.push(new Item(fun, args)), 1 !== queue.length || draining || setTimeout(drainQueue, 0);
-        }, Item.prototype.run = function() {
-            this.fun.apply(null, this.array);
-        }, process.title = "browser", process.browser = !0, process.env = {}, process.argv = [], 
-        process.version = "", // empty string to avoid regexp issues
-        process.versions = {}, process.on = noop, process.addListener = noop, process.once = noop, 
-        process.off = noop, process.removeListener = noop, process.removeAllListeners = noop, 
-        process.emit = noop, process.binding = function(name) {
-            throw new Error("process.binding is not supported");
-        }, process.cwd = function() {
-            return "/";
-        }, process.chdir = function(dir) {
-            throw new Error("process.chdir is not supported");
-        }, process.umask = function() {
-            return 0;
-        };
-    }, /* 4 */
-    /***/
-    function(module, exports) {
-        "use strict";
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-        }
-        Object.defineProperty(exports, "__esModule", {
-            value: !0
-        });
-        var _createClass = function() {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
-                    "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-            return function(Constructor, protoProps, staticProps) {
-                return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
-                Constructor;
-            };
-        }(), Resource = function() {
-            function Resource(client, type, id) {
-                _classCallCheck(this, Resource), this.client = client, this.type = type, this.id = id, 
-                this.path = "/api/" + type + "/" + this.id;
-            }
-            return _createClass(Resource, [ {
-                key: "fetch",
-                value: function() {
-                    return this.client.fetchJSON(this.path);
-                }
-            }, {
-                key: "load",
-                value: function() {
-                    return this.fetch();
-                }
-            }, {
-                key: "update",
-                value: function(payload) {
-                    return this.client.fetchJSON(this.path, {
-                        method: "PUT",
-                        body: payload
-                    });
-                }
-            }, {
-                key: "delete",
-                value: function() {
-                    return this.client["delete"](this.path);
-                }
-            }, {
-                key: "remove",
-                value: function() {
-                    return this["delete"]();
-                }
-            } ]), Resource;
-        }();
-        // TODO WithEvents functional mixin
-        // TODO WithComments functional mixin
-        exports["default"] = Resource;
-    }, /* 5 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -664,7 +560,7 @@
                 for (var i = 0; length > i && !(i + offset >= dst.length || i >= src.length); i++) dst[i + offset] = src[i];
                 return i;
             }
-            var base64 = __webpack_require__(30), ieee754 = __webpack_require__(38), isArray = __webpack_require__(31);
+            var base64 = __webpack_require__(32), ieee754 = __webpack_require__(39), isArray = __webpack_require__(33);
             exports.Buffer = Buffer, exports.SlowBuffer = SlowBuffer, exports.INSPECT_MAX_BYTES = 50, 
             Buffer.poolSize = 8192;
             // not used by this implementation
@@ -1030,9 +926,110 @@
                 arr.toArrayBuffer = BP.toArrayBuffer, arr;
             };
             var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g;
-        }).call(exports, __webpack_require__(5).Buffer, function() {
+        }).call(exports, __webpack_require__(3).Buffer, function() {
             return this;
         }());
+    }, /* 4 */
+    /***/
+    function(module, exports) {
+        function cleanUpNextTick() {
+            draining = !1, currentQueue.length ? queue = currentQueue.concat(queue) : queueIndex = -1, 
+            queue.length && drainQueue();
+        }
+        function drainQueue() {
+            if (!draining) {
+                var timeout = setTimeout(cleanUpNextTick);
+                draining = !0;
+                for (var len = queue.length; len; ) {
+                    for (currentQueue = queue, queue = []; ++queueIndex < len; ) currentQueue && currentQueue[queueIndex].run();
+                    queueIndex = -1, len = queue.length;
+                }
+                currentQueue = null, draining = !1, clearTimeout(timeout);
+            }
+        }
+        // v8 likes predictible objects
+        function Item(fun, array) {
+            this.fun = fun, this.array = array;
+        }
+        function noop() {}
+        // shim for using process in browser
+        var currentQueue, process = module.exports = {}, queue = [], draining = !1, queueIndex = -1;
+        process.nextTick = function(fun) {
+            var args = new Array(arguments.length - 1);
+            if (arguments.length > 1) for (var i = 1; i < arguments.length; i++) args[i - 1] = arguments[i];
+            queue.push(new Item(fun, args)), 1 !== queue.length || draining || setTimeout(drainQueue, 0);
+        }, Item.prototype.run = function() {
+            this.fun.apply(null, this.array);
+        }, process.title = "browser", process.browser = !0, process.env = {}, process.argv = [], 
+        process.version = "", // empty string to avoid regexp issues
+        process.versions = {}, process.on = noop, process.addListener = noop, process.once = noop, 
+        process.off = noop, process.removeListener = noop, process.removeAllListeners = noop, 
+        process.emit = noop, process.binding = function(name) {
+            throw new Error("process.binding is not supported");
+        }, process.cwd = function() {
+            return "/";
+        }, process.chdir = function(dir) {
+            throw new Error("process.chdir is not supported");
+        }, process.umask = function() {
+            return 0;
+        };
+    }, /* 5 */
+    /***/
+    function(module, exports) {
+        "use strict";
+        function _classCallCheck(instance, Constructor) {
+            if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+        }
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        });
+        var _createClass = function() {
+            function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                    var descriptor = props[i];
+                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                    "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+                }
+            }
+            return function(Constructor, protoProps, staticProps) {
+                return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
+                Constructor;
+            };
+        }(), Resource = function() {
+            function Resource(client, type, id) {
+                _classCallCheck(this, Resource), this.client = client, this.type = type, this.id = id, 
+                this.path = "/api/" + type + "/" + this.id;
+            }
+            return _createClass(Resource, [ {
+                key: "fetch",
+                value: function() {
+                    return this.client.fetchJSON(this.path);
+                }
+            }, {
+                key: "load",
+                value: function() {
+                    return this.fetch();
+                }
+            }, {
+                key: "update",
+                value: function(payload) {
+                    return this.client.putJSON(this.path, payload);
+                }
+            }, {
+                key: "delete",
+                value: function() {
+                    return this.client["delete"](this.path);
+                }
+            }, {
+                key: "remove",
+                value: function() {
+                    return this["delete"]();
+                }
+            } ]), Resource;
+        }();
+        // TODO WithEvents functional mixin
+        // TODO WithComments functional mixin
+        exports["default"] = Resource;
     }, /* 6 */
     /***/
     function(module, exports, __webpack_require__) {
@@ -1111,7 +1108,7 @@
             exports.isSymbol = isSymbol, exports.isUndefined = isUndefined, exports.isRegExp = isRegExp, 
             exports.isObject = isObject, exports.isDate = isDate, exports.isError = isError, 
             exports.isFunction = isFunction, exports.isPrimitive = isPrimitive, exports.isBuffer = Buffer.isBuffer;
-        }).call(exports, __webpack_require__(5).Buffer);
+        }).call(exports, __webpack_require__(3).Buffer);
     }, /* 7 */
     /***/
     function(module, exports, __webpack_require__) {
@@ -1142,9 +1139,9 @@
         // USE OR OTHER DEALINGS IN THE SOFTWARE.
         module.exports = Stream;
         var EE = __webpack_require__(8).EventEmitter, inherits = __webpack_require__(1);
-        inherits(Stream, EE), Stream.Readable = __webpack_require__(51), Stream.Writable = __webpack_require__(53), 
-        Stream.Duplex = __webpack_require__(49), Stream.Transform = __webpack_require__(52), 
-        Stream.PassThrough = __webpack_require__(50), // Backwards-compat with node 0.4.x
+        inherits(Stream, EE), Stream.Readable = __webpack_require__(52), Stream.Writable = __webpack_require__(54), 
+        Stream.Duplex = __webpack_require__(50), Stream.Transform = __webpack_require__(53), 
+        Stream.PassThrough = __webpack_require__(51), // Backwards-compat with node 0.4.x
         Stream.Stream = Stream, Stream.prototype.pipe = function(dest, options) {
             function ondata(chunk) {
                 dest.writable && !1 === dest.write(chunk) && source.pause && source.pause();
@@ -1656,7 +1653,7 @@
             // the drain event emission and buffering.
             module.exports = Writable;
             /*<replacement>*/
-            var Buffer = __webpack_require__(5).Buffer;
+            var Buffer = __webpack_require__(3).Buffer;
             /*</replacement>*/
             Writable.WritableState = WritableState;
             /*<replacement>*/
@@ -1688,7 +1685,7 @@
                 state.corked && (state.corked = 1, this.uncork()), // ignore unnecessary end() calls.
                 state.ending || state.finished || endWritable(this, state, cb);
             };
-        }).call(exports, __webpack_require__(3));
+        }).call(exports, __webpack_require__(4));
     }, /* 11 */
     /***/
     function(module, exports) {
@@ -1741,10 +1738,7 @@
             }, {
                 key: "create",
                 value: function(body) {
-                    return this.client.fetchJSON(this.path, {
-                        method: "post",
-                        body: body
-                    });
+                    return this.client.postJSON(this.path, body);
                 }
             } ]), Collection;
         }();
@@ -1752,7 +1746,181 @@
     }, /* 13 */
     /***/
     function(module, exports, __webpack_require__) {
-        var http = module.exports, Request = (__webpack_require__(8).EventEmitter, __webpack_require__(35)), url = __webpack_require__(20);
+        "use strict";
+        /**
+	 * Representation of a single EventEmitter function.
+	 *
+	 * @param {Function} fn Event handler to be called.
+	 * @param {Mixed} context Context for function execution.
+	 * @param {Boolean} once Only emit once
+	 * @api private
+	 */
+        function EE(fn, context, once) {
+            this.fn = fn, this.context = context, this.once = once || !1;
+        }
+        /**
+	 * Minimal EventEmitter interface that is molded against the Node.js
+	 * EventEmitter interface.
+	 *
+	 * @constructor
+	 * @api public
+	 */
+        function EventEmitter() {}
+        //
+        // We store our EE objects in a plain object whose properties are event names.
+        // If `Object.create(null)` is not supported we prefix the event names with a
+        // `~` to make sure that the built-in object properties are not overridden or
+        // used as an attack vector.
+        // We also assume that `Object.create(null)` is available when the event name
+        // is an ES6 Symbol.
+        //
+        var prefix = "function" != typeof Object.create ? "~" : !1;
+        /**
+	 * Holds the assigned EventEmitters by name.
+	 *
+	 * @type {Object}
+	 * @private
+	 */
+        EventEmitter.prototype._events = void 0, /**
+	 * Return a list of assigned event listeners.
+	 *
+	 * @param {String} event The events that should be listed.
+	 * @param {Boolean} exists We only need to know if there are listeners.
+	 * @returns {Array|Boolean}
+	 * @api public
+	 */
+        EventEmitter.prototype.listeners = function(event, exists) {
+            var evt = prefix ? prefix + event : event, available = this._events && this._events[evt];
+            if (exists) return !!available;
+            if (!available) return [];
+            if (available.fn) return [ available.fn ];
+            for (var i = 0, l = available.length, ee = new Array(l); l > i; i++) ee[i] = available[i].fn;
+            return ee;
+        }, /**
+	 * Emit an event to all registered event listeners.
+	 *
+	 * @param {String} event The name of the event.
+	 * @returns {Boolean} Indication if we've emitted an event.
+	 * @api public
+	 */
+        EventEmitter.prototype.emit = function(event, a1, a2, a3, a4, a5) {
+            var evt = prefix ? prefix + event : event;
+            if (!this._events || !this._events[evt]) return !1;
+            var args, i, listeners = this._events[evt], len = arguments.length;
+            if ("function" == typeof listeners.fn) {
+                switch (listeners.once && this.removeListener(event, listeners.fn, void 0, !0), 
+                len) {
+                  case 1:
+                    return listeners.fn.call(listeners.context), !0;
+
+                  case 2:
+                    return listeners.fn.call(listeners.context, a1), !0;
+
+                  case 3:
+                    return listeners.fn.call(listeners.context, a1, a2), !0;
+
+                  case 4:
+                    return listeners.fn.call(listeners.context, a1, a2, a3), !0;
+
+                  case 5:
+                    return listeners.fn.call(listeners.context, a1, a2, a3, a4), !0;
+
+                  case 6:
+                    return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), !0;
+                }
+                for (i = 1, args = new Array(len - 1); len > i; i++) args[i - 1] = arguments[i];
+                listeners.fn.apply(listeners.context, args);
+            } else {
+                var j, length = listeners.length;
+                for (i = 0; length > i; i++) switch (listeners[i].once && this.removeListener(event, listeners[i].fn, void 0, !0), 
+                len) {
+                  case 1:
+                    listeners[i].fn.call(listeners[i].context);
+                    break;
+
+                  case 2:
+                    listeners[i].fn.call(listeners[i].context, a1);
+                    break;
+
+                  case 3:
+                    listeners[i].fn.call(listeners[i].context, a1, a2);
+                    break;
+
+                  default:
+                    if (!args) for (j = 1, args = new Array(len - 1); len > j; j++) args[j - 1] = arguments[j];
+                    listeners[i].fn.apply(listeners[i].context, args);
+                }
+            }
+            return !0;
+        }, /**
+	 * Register a new EventListener for the given event.
+	 *
+	 * @param {String} event Name of the event.
+	 * @param {Functon} fn Callback function.
+	 * @param {Mixed} context The context of the function.
+	 * @api public
+	 */
+        EventEmitter.prototype.on = function(event, fn, context) {
+            var listener = new EE(fn, context || this), evt = prefix ? prefix + event : event;
+            return this._events || (this._events = prefix ? {} : Object.create(null)), this._events[evt] ? this._events[evt].fn ? this._events[evt] = [ this._events[evt], listener ] : this._events[evt].push(listener) : this._events[evt] = listener, 
+            this;
+        }, /**
+	 * Add an EventListener that's only called once.
+	 *
+	 * @param {String} event Name of the event.
+	 * @param {Function} fn Callback function.
+	 * @param {Mixed} context The context of the function.
+	 * @api public
+	 */
+        EventEmitter.prototype.once = function(event, fn, context) {
+            var listener = new EE(fn, context || this, !0), evt = prefix ? prefix + event : event;
+            return this._events || (this._events = prefix ? {} : Object.create(null)), this._events[evt] ? this._events[evt].fn ? this._events[evt] = [ this._events[evt], listener ] : this._events[evt].push(listener) : this._events[evt] = listener, 
+            this;
+        }, /**
+	 * Remove event listeners.
+	 *
+	 * @param {String} event The event we want to remove.
+	 * @param {Function} fn The listener that we need to find.
+	 * @param {Mixed} context Only remove listeners matching this context.
+	 * @param {Boolean} once Only remove once listeners.
+	 * @api public
+	 */
+        EventEmitter.prototype.removeListener = function(event, fn, context, once) {
+            var evt = prefix ? prefix + event : event;
+            if (!this._events || !this._events[evt]) return this;
+            var listeners = this._events[evt], events = [];
+            if (fn) if (listeners.fn) (listeners.fn !== fn || once && !listeners.once || context && listeners.context !== context) && events.push(listeners); else for (var i = 0, length = listeners.length; length > i; i++) (listeners[i].fn !== fn || once && !listeners[i].once || context && listeners[i].context !== context) && events.push(listeners[i]);
+            //
+            // Reset the array, or remove it completely if we have no more listeners.
+            //
+            return events.length ? this._events[evt] = 1 === events.length ? events[0] : events : delete this._events[evt], 
+            this;
+        }, /**
+	 * Remove all listeners or only the listeners for the specified event.
+	 *
+	 * @param {String} event The event want to remove all listeners for.
+	 * @api public
+	 */
+        EventEmitter.prototype.removeAllListeners = function(event) {
+            return this._events ? (event ? delete this._events[prefix ? prefix + event : event] : this._events = prefix ? {} : Object.create(null), 
+            this) : this;
+        }, //
+        // Alias methods names because people roll like that.
+        //
+        EventEmitter.prototype.off = EventEmitter.prototype.removeListener, EventEmitter.prototype.addListener = EventEmitter.prototype.on, 
+        //
+        // This function doesn't apply anymore.
+        //
+        EventEmitter.prototype.setMaxListeners = function() {
+            return this;
+        }, //
+        // Expose the prefix.
+        //
+        EventEmitter.prefixed = prefix, module.exports = EventEmitter;
+    }, /* 14 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        var http = module.exports, Request = (__webpack_require__(8).EventEmitter, __webpack_require__(36)), url = __webpack_require__(21);
         http.request = function(params, cb) {
             "string" == typeof params && (params = url.parse(params)), params || (params = {}), 
             params.host || params.port || (params.port = parseInt(window.location.port, 10)), 
@@ -1857,7 +2025,7 @@
             // RFC 2774
             511: "Network Authentication Required"
         };
-    }, /* 14 */
+    }, /* 15 */
     /***/
     function(module, exports, __webpack_require__) {
         var __WEBPACK_AMD_DEFINE_RESULT__;
@@ -11770,7 +11938,7 @@
         }).call(exports, __webpack_require__(11)(module), function() {
             return this;
         }());
-    }, /* 15 */
+    }, /* 16 */
     /***/
     function(module, exports, __webpack_require__) {
         function PassThrough(options) {
@@ -11805,7 +11973,7 @@
         util.inherits(PassThrough, Transform), PassThrough.prototype._transform = function(chunk, encoding, cb) {
             cb(null, chunk);
         };
-    }, /* 16 */
+    }, /* 17 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -11836,7 +12004,7 @@
                 // after read()ing all the bytes and not getting any pushback.
                 this.ranOut = !1, // the number of writers that are awaiting a drain event in .pipe()s
                 this.awaitDrain = 0, // if true, a maybeReadMore has been scheduled
-                this.readingMore = !1, this.decoder = null, this.encoding = null, options.encoding && (StringDecoder || (StringDecoder = __webpack_require__(17).StringDecoder), 
+                this.readingMore = !1, this.decoder = null, this.encoding = null, options.encoding && (StringDecoder || (StringDecoder = __webpack_require__(18).StringDecoder), 
                 this.decoder = new StringDecoder(options.encoding), this.encoding = options.encoding);
             }
             function Readable(options) {
@@ -12019,7 +12187,7 @@
             // USE OR OTHER DEALINGS IN THE SOFTWARE.
             module.exports = Readable;
             /*<replacement>*/
-            var isArray = __webpack_require__(39), Buffer = __webpack_require__(5).Buffer;
+            var isArray = __webpack_require__(40), Buffer = __webpack_require__(3).Buffer;
             /*</replacement>*/
             Readable.ReadableState = ReadableState;
             var EE = __webpack_require__(8).EventEmitter;
@@ -12031,7 +12199,7 @@
             var Stream = __webpack_require__(7), util = __webpack_require__(6);
             util.inherits = __webpack_require__(1);
             /*</replacement>*/
-            var StringDecoder, debug = __webpack_require__(61);
+            var StringDecoder, debug = __webpack_require__(62);
             debug = debug && debug.debuglog ? debug.debuglog("stream") : function() {}, util.inherits(Readable, Stream), 
             Readable.prototype.push = function(chunk, encoding) {
                 var state = this._readableState;
@@ -12042,7 +12210,7 @@
                 var state = this._readableState;
                 return readableAddChunk(this, state, chunk, "", !0);
             }, Readable.prototype.setEncoding = function(enc) {
-                return StringDecoder || (StringDecoder = __webpack_require__(17).StringDecoder), 
+                return StringDecoder || (StringDecoder = __webpack_require__(18).StringDecoder), 
                 this._readableState.decoder = new StringDecoder(enc), this._readableState.encoding = enc, 
                 this;
             };
@@ -12259,8 +12427,8 @@
                 }, self;
             }, // exposed for testing purposes only.
             Readable._fromList = fromList;
-        }).call(exports, __webpack_require__(3));
-    }, /* 17 */
+        }).call(exports, __webpack_require__(4));
+    }, /* 18 */
     /***/
     function(module, exports, __webpack_require__) {
         function assertEncoding(encoding) {
@@ -12295,7 +12463,7 @@
         // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
         // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
         // USE OR OTHER DEALINGS IN THE SOFTWARE.
-        var Buffer = __webpack_require__(5).Buffer, isBufferEncoding = Buffer.isEncoding || function(encoding) {
+        var Buffer = __webpack_require__(3).Buffer, isBufferEncoding = Buffer.isEncoding || function(encoding) {
             switch (encoding && encoding.toLowerCase()) {
               case "hex":
               case "utf8":
@@ -12422,7 +12590,7 @@
             }
             return res;
         };
-    }, /* 18 */
+    }, /* 19 */
     /***/
     function(module, exports) {
         function normalize(str) {
@@ -12432,7 +12600,7 @@
             var joined = [].slice.call(arguments, 0).join("/");
             return normalize(joined);
         };
-    }, /* 19 */
+    }, /* 20 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -12487,7 +12655,7 @@
             //
             url.href = url.toString();
         }
-        var required = __webpack_require__(48), lolcation = __webpack_require__(55), qs = __webpack_require__(47), relativere = /^\/(?!\/)/, instructions = [ [ "#", "hash" ], // Extract from the back.
+        var required = __webpack_require__(49), lolcation = __webpack_require__(56), qs = __webpack_require__(48), relativere = /^\/(?!\/)/, instructions = [ [ "#", "hash" ], // Extract from the back.
         [ "?", "query" ], // Extract from the back.
         [ "//", "protocol", 2, 1, 1 ], // Extract from the front.
         [ "/", "pathname" ], // Extract from the back.
@@ -12532,7 +12700,7 @@
         // others.
         //
         URL.qs = qs, URL.location = lolcation, module.exports = URL;
-    }, /* 20 */
+    }, /* 21 */
     /***/
     function(module, exports, __webpack_require__) {
         function Url() {
@@ -12591,7 +12759,7 @@
         // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
         // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
         // USE OR OTHER DEALINGS IN THE SOFTWARE.
-        var punycode = __webpack_require__(56);
+        var punycode = __webpack_require__(57);
         exports.parse = urlParse, exports.resolve = urlResolve, exports.resolveObject = urlResolveObject, 
         exports.format = urlFormat, exports.Url = Url;
         // Reference: RFC 3986, RFC 1808, RFC 2396
@@ -12625,7 +12793,7 @@
             "ftp:": !0,
             "gopher:": !0,
             "file:": !0
-        }, querystring = __webpack_require__(46);
+        }, querystring = __webpack_require__(47);
         Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
             if (!isString(url)) throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
             var rest = url;
@@ -12855,7 +13023,7 @@
             port && (port = port[0], ":" !== port && (this.port = port.substr(1)), host = host.substr(0, host.length - port.length)), 
             host && (this.hostname = host);
         };
-    }, /* 21 */
+    }, /* 22 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -13150,7 +13318,7 @@
             exports.isNullOrUndefined = isNullOrUndefined, exports.isNumber = isNumber, exports.isString = isString, 
             exports.isSymbol = isSymbol, exports.isUndefined = isUndefined, exports.isRegExp = isRegExp, 
             exports.isObject = isObject, exports.isDate = isDate, exports.isError = isError, 
-            exports.isFunction = isFunction, exports.isPrimitive = isPrimitive, exports.isBuffer = __webpack_require__(57);
+            exports.isFunction = isFunction, exports.isPrimitive = isPrimitive, exports.isBuffer = __webpack_require__(58);
             var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
             // log is just a thin wrapper to console.log that prepends a timestamp
             exports.log = function() {
@@ -13176,8 +13344,8 @@
             };
         }).call(exports, function() {
             return this;
-        }(), __webpack_require__(3));
-    }, /* 22 */
+        }(), __webpack_require__(4));
+    }, /* 23 */
     /***/
     function(module, exports, __webpack_require__) {
         !function() {
@@ -13211,7 +13379,29 @@
                 return output;
             });
         }();
-    }, /* 23 */
+    }, /* 24 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        /* WEBPACK VAR INJECTION */
+        (function(Buffer) {
+            "use strict";
+            function makeAuthorizationHeader(options) {
+                return options.token ? "Bearer  " + this.token : basicAuth(options);
+            }
+            function basicAuth(_ref) {
+                var username = _ref.username, password = _ref.password;
+                if (!username || !password) return "";
+                var t = btoa(username + ":" + password);
+                return "Basic " + t;
+            }
+            Object.defineProperty(exports, "__esModule", {
+                value: !0
+            }), exports.makeAuthorizationHeader = makeAuthorizationHeader, exports.basicAuth = basicAuth;
+            var btoa = window.btoa || function(s) {
+                return new Buffer(s).toString("base64");
+            };
+        }).call(exports, __webpack_require__(3).Buffer);
+    }, /* 25 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -13241,14 +13431,14 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         });
-        var _resource = __webpack_require__(4), _resource2 = _interopRequireDefault(_resource), Channel = function(_Resource) {
+        var _resource = __webpack_require__(5), _resource2 = _interopRequireDefault(_resource), Channel = function(_Resource) {
             function Channel(client, id) {
                 return _classCallCheck(this, Channel), _possibleConstructorReturn(this, Object.getPrototypeOf(Channel).call(this, client, "channel", id));
             }
             return _inherits(Channel, _Resource), Channel;
         }(_resource2["default"]);
         exports["default"] = Channel;
-    }, /* 24 */
+    }, /* 26 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -13259,6 +13449,21 @@
         }
         function _classCallCheck(instance, Constructor) {
             if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+        }
+        function _possibleConstructorReturn(self, call) {
+            if (!self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+            return !call || "object" != typeof call && "function" != typeof call ? self : call;
+        }
+        function _inherits(subClass, superClass) {
+            if ("function" != typeof superClass && null !== superClass) throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+            subClass.prototype = Object.create(superClass && superClass.prototype, {
+                constructor: {
+                    value: subClass,
+                    enumerable: !1,
+                    writable: !0,
+                    configurable: !0
+                }
+            }), superClass && (Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass);
         }
         function makeResource(client, resourceType, id) {
             switch (resourceType.toLowerCase()) {
@@ -13279,7 +13484,7 @@
             }
         }
         function createCollection(client, resourceType) {
-            switch (name) {
+            switch (resourceType) {
               case "user":
                 return new _user.UserCollection(client, (0, _pluralize2["default"])(resourceType));
 
@@ -13293,8 +13498,8 @@
             }, _iteratorNormalCompletion = !0, _didIteratorError = !1, _iteratorError = void 0;
             try {
                 for (var _step, _iterator = Object.getOwnPropertyNames(Object.getPrototypeOf(collection))[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = !0) {
-                    var _name = _step.value, method = collection[_name];
-                    _lodash2["default"].isFunction(method) && (documentFn[_name] = collection[_name].bind(collection));
+                    var name = _step.value, method = collection[name];
+                    _lodash2["default"].isFunction(method) && (documentFn[name] = collection[name].bind(collection));
                 }
             } catch (err) {
                 _didIteratorError = !0, _iteratorError = err;
@@ -13328,36 +13533,65 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _resource = __webpack_require__(4), _resource2 = _interopRequireDefault(_resource), _user = __webpack_require__(29), _channel = __webpack_require__(23), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(28), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(26), _message2 = _interopRequireDefault(_message), _collection = __webpack_require__(12), _collection2 = _interopRequireDefault(_collection), _mimeType = __webpack_require__(27), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(18), _urlJoin2 = _interopRequireDefault(_urlJoin), _pluralize = __webpack_require__(42), _pluralize2 = _interopRequireDefault(_pluralize), _lodash = __webpack_require__(14), _lodash2 = _interopRequireDefault(_lodash);
-        __webpack_require__(32).polyfill(), __webpack_require__(40);
+        }(), _eventemitter = __webpack_require__(13), _eventemitter2 = _interopRequireDefault(_eventemitter), _resource = __webpack_require__(5), _resource2 = _interopRequireDefault(_resource), _user = __webpack_require__(31), _channel = __webpack_require__(25), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(30), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(28), _message2 = _interopRequireDefault(_message), _collection = __webpack_require__(12), _collection2 = _interopRequireDefault(_collection), _mimeType = __webpack_require__(29), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(19), _urlJoin2 = _interopRequireDefault(_urlJoin), _pluralize = __webpack_require__(43), _pluralize2 = _interopRequireDefault(_pluralize), _auth = __webpack_require__(24), _lodash = __webpack_require__(15), _lodash2 = _interopRequireDefault(_lodash);
+        __webpack_require__(34).polyfill(), __webpack_require__(41);
         var defaultOptions = {
             endpoint: "",
             token: ""
-        }, HubClient = function() {
-            function HubClient() {
+        }, Client = function(_EventEmitter) {
+            function Client() {
                 var options = arguments.length <= 0 || void 0 === arguments[0] ? defaultOptions : arguments[0];
-                _classCallCheck(this, HubClient), this.options = options, this.token = options.token, 
-                this.endpoint = options.endpoint, this.users = makeCollection(this, "user"), this.channels = makeCollection(this, "channel"), 
-                this.threads = makeCollection(this, "thread"), this.messages = makeCollection(this, "message");
+                _classCallCheck(this, Client);
+                var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Client).call(this));
+                return _this.options = options, _this.token = options.token, _this.auth = (0, _auth.makeAuthorizationHeader)(options), 
+                _this.endpoint = options.endpoint, _this.users = makeCollection(_this, "user"), 
+                _this.channels = makeCollection(_this, "channel"), _this.threads = makeCollection(_this, "thread"), 
+                _this.messages = makeCollection(_this, "message"), _this;
             }
-            return _createClass(HubClient, [ {
+            return _inherits(Client, _EventEmitter), _createClass(Client, [ {
                 key: "absurl",
                 value: function(url) {
                     return this.endpoint ? (0, _urlJoin2["default"])(this.endpoint, url) : url;
                 }
             }, {
+                key: "emitError",
+                value: function(err) {
+                    return _lodash2["default"].isFunction(this.onError) ? void this.onError(err) : void this.emit("error", err);
+                }
+            }, {
                 key: "fetchJSON",
-                value: function(url) {
-                    var options = arguments.length <= 1 || void 0 === arguments[1] ? {} : arguments[1], opts = _extends({
+                value: function(path) {
+                    var _this2 = this, options = arguments.length <= 1 || void 0 === arguments[1] ? {} : arguments[1], opts = _extends({
                         headers: {
-                            // TODO support basic auth
-                            Authorization: "Bearer  " + this.token,
+                            Authorization: this.auth,
                             Accept: _mimeType2["default"].json
                         }
-                    }, options);
-                    return fetch(this.absurl(url), opts).then(function(response) {
-                        return response.json();
+                    }, options), onSuccess = function(response) {
+                        return 401 === response.status ? (_this2.emitError({
+                            type: "unauthorized"
+                        }), Promise.reject("unauthorized")) : response.json();
+                    };
+                    return fetch(this.absurl(path), opts).then(onSuccess, function(err) {
+                        return _this2.emitError(err);
                     });
+                }
+            }, {
+                key: "postJSON",
+                value: function(path, body) {
+                    var extra = arguments.length <= 2 || void 0 === arguments[2] ? {} : arguments[2];
+                    return _lodash2["default"].isObject(body) && (body = JSON.stringify(body)), this.fetchJSON(path, _extends({
+                        method: "post",
+                        body: body
+                    }, extra));
+                }
+            }, {
+                key: "putJSON",
+                value: function(path, body) {
+                    var extra = arguments.length <= 2 || void 0 === arguments[2] ? {} : arguments[2];
+                    return _lodash2["default"].isObject(body) && (body = JSON.stringify(body)), this.fetchJSON(path, _extends({
+                        method: "put",
+                        body: body
+                    }, extra));
                 }
             }, {
                 key: "delete",
@@ -13367,16 +13601,24 @@
                     });
                 }
             }, {
+                key: "token",
+                value: function() {
+                    return this.fetchJSON("/api/token");
+                }
+            }, {
+                key: "login",
+                value: function(payload) {
+                    return this.postJSON("/api/login", payload);
+                }
+            }, {
                 key: "logout",
                 value: function() {
-                    return this.fetchJSON("/api/logout", {
-                        method: "post"
-                    });
+                    return this.postJSON("/api/logout", {});
                 }
-            } ]), HubClient;
-        }();
-        exports["default"] = HubClient;
-    }, /* 25 */
+            } ]), Client;
+        }(_eventemitter2["default"]);
+        exports["default"] = Client;
+    }, /* 27 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -13418,7 +13660,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _eventemitter = __webpack_require__(33), _eventemitter2 = _interopRequireDefault(_eventemitter), _eventsource = __webpack_require__(34), _eventsource2 = _interopRequireDefault(_eventsource), _urlJoin = __webpack_require__(18), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(43), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(14), _lodash2 = _interopRequireDefault(_lodash), EventStream = function(_EventEmitter) {
+        }(), _eventemitter = __webpack_require__(13), _eventemitter2 = _interopRequireDefault(_eventemitter), _eventsource = __webpack_require__(35), _eventsource2 = _interopRequireDefault(_eventsource), _urlJoin = __webpack_require__(19), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(44), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(15), _lodash2 = _interopRequireDefault(_lodash), EventStream = function(_EventEmitter) {
             function EventStream(options) {
                 _classCallCheck(this, EventStream);
                 var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventStream).call(this));
@@ -13455,7 +13697,7 @@
             } ]), EventStream;
         }(_eventemitter2["default"]);
         exports["default"] = EventStream;
-    }, /* 26 */
+    }, /* 28 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -13485,14 +13727,14 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         });
-        var _resource = __webpack_require__(4), _resource2 = _interopRequireDefault(_resource), Message = function(_Resource) {
+        var _resource = __webpack_require__(5), _resource2 = _interopRequireDefault(_resource), Message = function(_Resource) {
             function Message(client, id) {
                 return _classCallCheck(this, Message), _possibleConstructorReturn(this, Object.getPrototypeOf(Message).call(this, client, "message", id));
             }
             return _inherits(Message, _Resource), Message;
         }(_resource2["default"]);
         exports["default"] = Message;
-    }, /* 27 */
+    }, /* 29 */
     /***/
     function(module, exports) {
         "use strict";
@@ -13503,7 +13745,7 @@
             json: "application/json"
         };
         exports["default"] = mimeType;
-    }, /* 28 */
+    }, /* 30 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -13545,7 +13787,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _resource = __webpack_require__(4), _resource2 = _interopRequireDefault(_resource), defaultFormat = exports.defaultFormat = "text/markdown", Thread = function(_Resource) {
+        }(), _resource = __webpack_require__(5), _resource2 = _interopRequireDefault(_resource), defaultFormat = exports.defaultFormat = "text/markdown", Thread = function(_Resource) {
             function Thread(client, id) {
                 return _classCallCheck(this, Thread), _possibleConstructorReturn(this, Object.getPrototypeOf(Thread).call(this, client, "thread", id));
             }
@@ -13556,10 +13798,7 @@
                     return "string" == typeof msg && (payload = {
                         body: msg,
                         format: defaultFormat
-                    }), this.client.fetchJSON(this.path, {
-                        method: "post",
-                        body: payload
-                    });
+                    }), this.client.postJSON(this.path, payload);
                 }
             }, {
                 key: "send",
@@ -13569,7 +13808,7 @@
             } ]), Thread;
         }(_resource2["default"]);
         exports["default"] = Thread;
-    }, /* 29 */
+    }, /* 31 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -13611,7 +13850,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _resource = __webpack_require__(4), _resource2 = _interopRequireDefault(_resource), _collection = __webpack_require__(12), _collection2 = _interopRequireDefault(_collection);
+        }(), _resource = __webpack_require__(5), _resource2 = _interopRequireDefault(_resource), _collection = __webpack_require__(12), _collection2 = _interopRequireDefault(_collection);
         exports.User = function(_Resource) {
             function User(client, id) {
                 return _classCallCheck(this, User), _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, client, "user", id));
@@ -13628,7 +13867,7 @@
                 }
             } ]), UserCollection;
         }(_collection2["default"]);
-    }, /* 30 */
+    }, /* 32 */
     /***/
     function(module, exports, __webpack_require__) {
         var lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -13690,14 +13929,14 @@
             var Arr = "undefined" != typeof Uint8Array ? Uint8Array : Array, PLUS = "+".charCodeAt(0), SLASH = "/".charCodeAt(0), NUMBER = "0".charCodeAt(0), LOWER = "a".charCodeAt(0), UPPER = "A".charCodeAt(0), PLUS_URL_SAFE = "-".charCodeAt(0), SLASH_URL_SAFE = "_".charCodeAt(0);
             exports.toByteArray = b64ToByteArray, exports.fromByteArray = uint8ToBase64;
         }(exports);
-    }, /* 31 */
+    }, /* 33 */
     /***/
     function(module, exports) {
         var toString = {}.toString;
         module.exports = Array.isArray || function(arr) {
             return "[object Array]" == toString.call(arr);
         };
-    }, /* 32 */
+    }, /* 34 */
     /***/
     function(module, exports, __webpack_require__) {
         var __WEBPACK_AMD_DEFINE_RESULT__;
@@ -13766,7 +14005,7 @@
                 }
                 function lib$es6$promise$asap$$attemptVertx() {
                     try {
-                        var vertx = __webpack_require__(60);
+                        var vertx = __webpack_require__(61);
                         return lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext, 
                         lib$es6$promise$asap$$useVertxTimer();
                     } catch (e) {
@@ -14318,189 +14557,15 @@
                     polyfill: lib$es6$promise$polyfill$$default
                 };
                 /* global define:true module:true window: true */
-                __webpack_require__(58).amd ? (__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+                __webpack_require__(59).amd ? (__WEBPACK_AMD_DEFINE_RESULT__ = function() {
                     return lib$es6$promise$umd$$ES6Promise;
                 }.call(exports, __webpack_require__, exports, module), !(void 0 !== __WEBPACK_AMD_DEFINE_RESULT__ && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))) : "undefined" != typeof module && module.exports ? module.exports = lib$es6$promise$umd$$ES6Promise : "undefined" != typeof this && (this.ES6Promise = lib$es6$promise$umd$$ES6Promise), 
                 lib$es6$promise$polyfill$$default();
             }).call(this);
-        }).call(exports, __webpack_require__(3), function() {
+        }).call(exports, __webpack_require__(4), function() {
             return this;
         }(), __webpack_require__(11)(module));
-    }, /* 33 */
-    /***/
-    function(module, exports, __webpack_require__) {
-        "use strict";
-        /**
-	 * Representation of a single EventEmitter function.
-	 *
-	 * @param {Function} fn Event handler to be called.
-	 * @param {Mixed} context Context for function execution.
-	 * @param {Boolean} once Only emit once
-	 * @api private
-	 */
-        function EE(fn, context, once) {
-            this.fn = fn, this.context = context, this.once = once || !1;
-        }
-        /**
-	 * Minimal EventEmitter interface that is molded against the Node.js
-	 * EventEmitter interface.
-	 *
-	 * @constructor
-	 * @api public
-	 */
-        function EventEmitter() {}
-        //
-        // We store our EE objects in a plain object whose properties are event names.
-        // If `Object.create(null)` is not supported we prefix the event names with a
-        // `~` to make sure that the built-in object properties are not overridden or
-        // used as an attack vector.
-        // We also assume that `Object.create(null)` is available when the event name
-        // is an ES6 Symbol.
-        //
-        var prefix = "function" != typeof Object.create ? "~" : !1;
-        /**
-	 * Holds the assigned EventEmitters by name.
-	 *
-	 * @type {Object}
-	 * @private
-	 */
-        EventEmitter.prototype._events = void 0, /**
-	 * Return a list of assigned event listeners.
-	 *
-	 * @param {String} event The events that should be listed.
-	 * @param {Boolean} exists We only need to know if there are listeners.
-	 * @returns {Array|Boolean}
-	 * @api public
-	 */
-        EventEmitter.prototype.listeners = function(event, exists) {
-            var evt = prefix ? prefix + event : event, available = this._events && this._events[evt];
-            if (exists) return !!available;
-            if (!available) return [];
-            if (available.fn) return [ available.fn ];
-            for (var i = 0, l = available.length, ee = new Array(l); l > i; i++) ee[i] = available[i].fn;
-            return ee;
-        }, /**
-	 * Emit an event to all registered event listeners.
-	 *
-	 * @param {String} event The name of the event.
-	 * @returns {Boolean} Indication if we've emitted an event.
-	 * @api public
-	 */
-        EventEmitter.prototype.emit = function(event, a1, a2, a3, a4, a5) {
-            var evt = prefix ? prefix + event : event;
-            if (!this._events || !this._events[evt]) return !1;
-            var args, i, listeners = this._events[evt], len = arguments.length;
-            if ("function" == typeof listeners.fn) {
-                switch (listeners.once && this.removeListener(event, listeners.fn, void 0, !0), 
-                len) {
-                  case 1:
-                    return listeners.fn.call(listeners.context), !0;
-
-                  case 2:
-                    return listeners.fn.call(listeners.context, a1), !0;
-
-                  case 3:
-                    return listeners.fn.call(listeners.context, a1, a2), !0;
-
-                  case 4:
-                    return listeners.fn.call(listeners.context, a1, a2, a3), !0;
-
-                  case 5:
-                    return listeners.fn.call(listeners.context, a1, a2, a3, a4), !0;
-
-                  case 6:
-                    return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), !0;
-                }
-                for (i = 1, args = new Array(len - 1); len > i; i++) args[i - 1] = arguments[i];
-                listeners.fn.apply(listeners.context, args);
-            } else {
-                var j, length = listeners.length;
-                for (i = 0; length > i; i++) switch (listeners[i].once && this.removeListener(event, listeners[i].fn, void 0, !0), 
-                len) {
-                  case 1:
-                    listeners[i].fn.call(listeners[i].context);
-                    break;
-
-                  case 2:
-                    listeners[i].fn.call(listeners[i].context, a1);
-                    break;
-
-                  case 3:
-                    listeners[i].fn.call(listeners[i].context, a1, a2);
-                    break;
-
-                  default:
-                    if (!args) for (j = 1, args = new Array(len - 1); len > j; j++) args[j - 1] = arguments[j];
-                    listeners[i].fn.apply(listeners[i].context, args);
-                }
-            }
-            return !0;
-        }, /**
-	 * Register a new EventListener for the given event.
-	 *
-	 * @param {String} event Name of the event.
-	 * @param {Functon} fn Callback function.
-	 * @param {Mixed} context The context of the function.
-	 * @api public
-	 */
-        EventEmitter.prototype.on = function(event, fn, context) {
-            var listener = new EE(fn, context || this), evt = prefix ? prefix + event : event;
-            return this._events || (this._events = prefix ? {} : Object.create(null)), this._events[evt] ? this._events[evt].fn ? this._events[evt] = [ this._events[evt], listener ] : this._events[evt].push(listener) : this._events[evt] = listener, 
-            this;
-        }, /**
-	 * Add an EventListener that's only called once.
-	 *
-	 * @param {String} event Name of the event.
-	 * @param {Function} fn Callback function.
-	 * @param {Mixed} context The context of the function.
-	 * @api public
-	 */
-        EventEmitter.prototype.once = function(event, fn, context) {
-            var listener = new EE(fn, context || this, !0), evt = prefix ? prefix + event : event;
-            return this._events || (this._events = prefix ? {} : Object.create(null)), this._events[evt] ? this._events[evt].fn ? this._events[evt] = [ this._events[evt], listener ] : this._events[evt].push(listener) : this._events[evt] = listener, 
-            this;
-        }, /**
-	 * Remove event listeners.
-	 *
-	 * @param {String} event The event we want to remove.
-	 * @param {Function} fn The listener that we need to find.
-	 * @param {Mixed} context Only remove listeners matching this context.
-	 * @param {Boolean} once Only remove once listeners.
-	 * @api public
-	 */
-        EventEmitter.prototype.removeListener = function(event, fn, context, once) {
-            var evt = prefix ? prefix + event : event;
-            if (!this._events || !this._events[evt]) return this;
-            var listeners = this._events[evt], events = [];
-            if (fn) if (listeners.fn) (listeners.fn !== fn || once && !listeners.once || context && listeners.context !== context) && events.push(listeners); else for (var i = 0, length = listeners.length; length > i; i++) (listeners[i].fn !== fn || once && !listeners[i].once || context && listeners[i].context !== context) && events.push(listeners[i]);
-            //
-            // Reset the array, or remove it completely if we have no more listeners.
-            //
-            return events.length ? this._events[evt] = 1 === events.length ? events[0] : events : delete this._events[evt], 
-            this;
-        }, /**
-	 * Remove all listeners or only the listeners for the specified event.
-	 *
-	 * @param {String} event The event want to remove all listeners for.
-	 * @api public
-	 */
-        EventEmitter.prototype.removeAllListeners = function(event) {
-            return this._events ? (event ? delete this._events[prefix ? prefix + event : event] : this._events = prefix ? {} : Object.create(null), 
-            this) : this;
-        }, //
-        // Alias methods names because people roll like that.
-        //
-        EventEmitter.prototype.off = EventEmitter.prototype.removeListener, EventEmitter.prototype.addListener = EventEmitter.prototype.on, 
-        //
-        // This function doesn't apply anymore.
-        //
-        EventEmitter.prototype.setMaxListeners = function() {
-            return this;
-        }, //
-        // Expose the prefix.
-        //
-        EventEmitter.prefixed = prefix, module.exports = EventEmitter;
-    }, /* 34 */
+    }, /* 35 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -14644,7 +14709,7 @@
                     enumerable: !0
                 });
             }
-            var original = __webpack_require__(41), parse = __webpack_require__(20).parse, events = __webpack_require__(8), https = __webpack_require__(37), http = __webpack_require__(13), util = __webpack_require__(21);
+            var original = __webpack_require__(42), parse = __webpack_require__(21).parse, events = __webpack_require__(8), https = __webpack_require__(38), http = __webpack_require__(14), util = __webpack_require__(22);
             module.exports = EventSource, util.inherits(EventSource, events.EventEmitter), EventSource.prototype.constructor = EventSource, 
             // make stacktraces readable
             [ "open", "error", "message" ].forEach(function(method) {
@@ -14695,11 +14760,11 @@
                 "function" == typeof listener && (// store a reference so we can return the original function again
                 listener._listener = listener, this.on(method, listener));
             };
-        }).call(exports, __webpack_require__(3));
-    }, /* 35 */
+        }).call(exports, __webpack_require__(4));
+    }, /* 36 */
     /***/
     function(module, exports, __webpack_require__) {
-        var Stream = __webpack_require__(7), Response = __webpack_require__(36), Base64 = __webpack_require__(22), inherits = __webpack_require__(1), Request = module.exports = function(xhr, params) {
+        var Stream = __webpack_require__(7), Response = __webpack_require__(37), Base64 = __webpack_require__(23), inherits = __webpack_require__(1), Request = module.exports = function(xhr, params) {
             var self = this;
             self.writable = !0, self.xhr = xhr, self.body = [], self.uri = (params.protocol || "http:") + "//" + params.host + (params.port ? ":" + params.port : "") + (params.path || "/"), 
             "undefined" == typeof params.withCredentials && (params.withCredentials = !0);
@@ -14779,7 +14844,7 @@
         }, isXHR2Compatible = function(obj) {
             return "undefined" != typeof Blob && obj instanceof Blob ? !0 : "undefined" != typeof ArrayBuffer && obj instanceof ArrayBuffer ? !0 : "undefined" != typeof FormData && obj instanceof FormData ? !0 : void 0;
         };
-    }, /* 36 */
+    }, /* 37 */
     /***/
     function(module, exports, __webpack_require__) {
         function parseHeaders(res) {
@@ -14795,7 +14860,7 @@
             }
             return headers;
         }
-        var Stream = __webpack_require__(7), util = __webpack_require__(21), Response = module.exports = function(res) {
+        var Stream = __webpack_require__(7), util = __webpack_require__(22), Response = module.exports = function(res) {
             this.offset = 0, this.readable = !0;
         };
         util.inherits(Response, Stream);
@@ -14838,15 +14903,15 @@
         var isArray = Array.isArray || function(xs) {
             return "[object Array]" === Object.prototype.toString.call(xs);
         };
-    }, /* 37 */
+    }, /* 38 */
     /***/
     function(module, exports, __webpack_require__) {
-        var http = __webpack_require__(13), https = module.exports;
+        var http = __webpack_require__(14), https = module.exports;
         for (var key in http) http.hasOwnProperty(key) && (https[key] = http[key]);
         https.request = function(params, cb) {
             return params || (params = {}), params.scheme = "https", http.request.call(this, params, cb);
         };
-    }, /* 38 */
+    }, /* 39 */
     /***/
     function(module, exports) {
         exports.read = function(buffer, offset, isLE, mLen, nBytes) {
@@ -14872,21 +14937,21 @@
             e /= 256, eLen -= 8) ;
             buffer[offset + i - d] |= 128 * s;
         };
-    }, /* 39 */
+    }, /* 40 */
     /***/
     function(module, exports) {
         module.exports = Array.isArray || function(arr) {
             return "[object Array]" == Object.prototype.toString.call(arr);
         };
-    }, /* 40 */
+    }, /* 41 */
     /***/
     function(module, exports, __webpack_require__) {
         // the whatwg-fetch polyfill installs the fetch() function
         // on the global object (window or self)
         //
         // Return that as the export for use in Webpack, Browserify etc.
-        __webpack_require__(59), module.exports = self.fetch.bind(self);
-    }, /* 41 */
+        __webpack_require__(60), module.exports = self.fetch.bind(self);
+    }, /* 42 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -14908,7 +14973,7 @@
             //
             return "string" == typeof url && (url = parse(url)), url.protocol && url.hostname ? (url.protocol + "//" + url.host).toLowerCase() : "null";
         }
-        var parse = __webpack_require__(19);
+        var parse = __webpack_require__(20);
         /**
 	 * Check if the origins are the same.
 	 *
@@ -14923,7 +14988,7 @@
         // Expose the origin
         //
         module.exports = origin;
-    }, /* 42 */
+    }, /* 43 */
     /***/
     function(module, exports, __webpack_require__) {
         /* global define */
@@ -15107,11 +15172,11 @@
             /sheep$/i, /measles$/i, /[^aeiou]ese$/i ].forEach(pluralize.addUncountableRule), 
             pluralize;
         });
-    }, /* 43 */
+    }, /* 44 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
-        var strictUriEncode = __webpack_require__(54);
+        var strictUriEncode = __webpack_require__(55);
         exports.extract = function(str) {
             return str.split("?")[1] || "";
         }, exports.parse = function(str) {
@@ -15132,7 +15197,7 @@
                 return x.length > 0;
             }).join("&") : "";
         };
-    }, /* 44 */
+    }, /* 45 */
     /***/
     function(module, exports) {
         // Copyright Joyent, Inc. and other Node contributors.
@@ -15180,7 +15245,7 @@
             }
             return obj;
         };
-    }, /* 45 */
+    }, /* 46 */
     /***/
     function(module, exports) {
         // Copyright Joyent, Inc. and other Node contributors.
@@ -15227,12 +15292,12 @@
                 }).join(sep) : ks + encodeURIComponent(stringifyPrimitive(obj[k]));
             }).join(sep) : name ? encodeURIComponent(stringifyPrimitive(name)) + eq + encodeURIComponent(stringifyPrimitive(obj)) : "";
         };
-    }, /* 46 */
+    }, /* 47 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
-        exports.decode = exports.parse = __webpack_require__(44), exports.encode = exports.stringify = __webpack_require__(45);
-    }, /* 47 */
+        exports.decode = exports.parse = __webpack_require__(45), exports.encode = exports.stringify = __webpack_require__(46);
+    }, /* 48 */
     /***/
     function(module, exports) {
         "use strict";
@@ -15275,7 +15340,7 @@
         // Expose the module.
         //
         exports.stringify = querystringify, exports.parse = querystring;
-    }, /* 48 */
+    }, /* 49 */
     /***/
     function(module, exports) {
         "use strict";
@@ -15310,29 +15375,29 @@
             }
             return 0 !== port;
         };
-    }, /* 49 */
-    /***/
-    function(module, exports, __webpack_require__) {
-        module.exports = __webpack_require__(2);
     }, /* 50 */
     /***/
     function(module, exports, __webpack_require__) {
-        module.exports = __webpack_require__(15);
+        module.exports = __webpack_require__(2);
     }, /* 51 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(16), exports.Stream = __webpack_require__(7), 
-        exports.Readable = exports, exports.Writable = __webpack_require__(10), exports.Duplex = __webpack_require__(2), 
-        exports.Transform = __webpack_require__(9), exports.PassThrough = __webpack_require__(15);
+        module.exports = __webpack_require__(16);
     }, /* 52 */
     /***/
     function(module, exports, __webpack_require__) {
-        module.exports = __webpack_require__(9);
+        exports = module.exports = __webpack_require__(17), exports.Stream = __webpack_require__(7), 
+        exports.Readable = exports, exports.Writable = __webpack_require__(10), exports.Duplex = __webpack_require__(2), 
+        exports.Transform = __webpack_require__(9), exports.PassThrough = __webpack_require__(16);
     }, /* 53 */
     /***/
     function(module, exports, __webpack_require__) {
-        module.exports = __webpack_require__(10);
+        module.exports = __webpack_require__(9);
     }, /* 54 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        module.exports = __webpack_require__(10);
+    }, /* 55 */
     /***/
     function(module, exports) {
         "use strict";
@@ -15341,7 +15406,7 @@
                 return "%" + c.charCodeAt(0).toString(16).toUpperCase();
             });
         };
-    }, /* 55 */
+    }, /* 56 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -15372,7 +15437,7 @@
 	 * @api public
 	 */
             module.exports = function(loc) {
-                loc = loc || global.location || {}, URL = URL || __webpack_require__(19);
+                loc = loc || global.location || {}, URL = URL || __webpack_require__(20);
                 var key, finaldestination = {}, type = typeof loc;
                 if ("blob:" === loc.protocol) finaldestination = new URL(unescape(loc.pathname), {}); else if ("string" === type) {
                     finaldestination = new URL(loc, {});
@@ -15383,7 +15448,7 @@
         }).call(exports, function() {
             return this;
         }());
-    }, /* 56 */
+    }, /* 57 */
     /***/
     function(module, exports, __webpack_require__) {
         var __WEBPACK_AMD_DEFINE_RESULT__;
@@ -15655,19 +15720,19 @@
         }).call(exports, __webpack_require__(11)(module), function() {
             return this;
         }());
-    }, /* 57 */
+    }, /* 58 */
     /***/
     function(module, exports) {
         module.exports = function(arg) {
             return arg && "object" == typeof arg && "function" == typeof arg.copy && "function" == typeof arg.fill && "function" == typeof arg.readUInt8;
         };
-    }, /* 58 */
+    }, /* 59 */
     /***/
     function(module, exports) {
         module.exports = function() {
             throw new Error("define cannot be used indirect");
         };
-    }, /* 59 */
+    }, /* 60 */
     /***/
     function(module, exports) {
         !function(self) {
@@ -15863,9 +15928,9 @@
                 }, self.fetch.polyfill = !0;
             }
         }("undefined" != typeof self ? self : this);
-    }, /* 60 */
+    }, /* 61 */
     /***/
-    function(module, exports) {}, /* 61 */
+    function(module, exports) {}, /* 62 */
     /***/
     function(module, exports) {} ]);
 });

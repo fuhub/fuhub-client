@@ -1,29 +1,18 @@
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
-
-// TODO duplicate code (see client.js)
-function fetchJSON(url, options = {}) {
-	const opts = {
-		headers: {
-			// TODO support basic auth
-			Authorization: `Bearer  ${this.token}`,
-			Accept: mimeType.json,
-		},
-		...options,
-	};
-	return fetch(this.absurl(url), opts).then(response => response.json());
+export function makeAuthorizationHeader(options) {
+	if (options.token) {
+		return `Bearer  ${this.token}`;
+	}
+	return basicAuth(options);
 }
 
-// TODO support custom endpoint
-// TODO rename to lastToken?
-export function token() {
-	return fetchJSON('/api/token');
-}
+const btoa = window.btoa || function btoa(s) {
+	return new Buffer(s).toString('base64');
+};
 
-export function login(payload) {
-	return fetchJSON('/api/login', { method: 'post', body: payload });
-}
-
-export function signup(user) {
-	return fetchJSON('/api/signup', { method: 'post', body: user });
+export function basicAuth({ username, password }) {
+	if (!username || !password) {
+		return '';
+	}
+	const t = btoa(`${username}:${password}`);
+	return `Basic ${t}`;
 }

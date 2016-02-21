@@ -16,7 +16,7 @@ export default class Thread extends Resource {
 				format: defaultFormat,
 			};
 		}
-		return this.client.fetchJSON(this.path, { method: 'post', body: payload });
+		return this.client.postJSON(this.path, payload);
 	}
 
 	send(msg) {

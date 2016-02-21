@@ -17,7 +17,7 @@ export default class Resource {
 	}
 
 	update(payload) {
-		return this.client.fetchJSON(this.path, { method: 'PUT', body: payload });
+		return this.client.putJSON(this.path, payload);
 	}
 
 	delete() {

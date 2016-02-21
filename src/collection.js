@@ -18,7 +18,7 @@ export default class Collection {
 	}
 
 	create(body) {
-		return this.client.fetchJSON(this.path, { method: 'post', body });
+		return this.client.postJSON(this.path, body);
 	}
 
 	// TODO find
