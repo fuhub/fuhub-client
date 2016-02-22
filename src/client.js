@@ -102,6 +102,7 @@ export default class Client extends EventEmitter {
 			headers: {
 				Authorization: auth,
 				Accept: mimeType.json,
+				'Content-Type': mimeType.json,
 			},
 			...options,
 		};

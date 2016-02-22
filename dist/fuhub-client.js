@@ -13603,7 +13603,8 @@
                     var auth = this.makeAuth(), opts = _extends({
                         headers: {
                             Authorization: auth,
-                            Accept: _mimeType2["default"].json
+                            Accept: _mimeType2["default"].json,
+                            "Content-Type": _mimeType2["default"].json
                         }
                     }, options), onSuccess = function(response) {
                         return 401 === response.status ? (_this2.emitError({
