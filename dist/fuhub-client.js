@@ -13414,7 +13414,7 @@
         (function(Buffer) {
             "use strict";
             function makeAuthorizationHeader(options) {
-                return options.token ? "Bearer  " + this.token : basicAuth(options);
+                return options.token ? "Bearer  " + options.token : basicAuth(options);
             }
             function basicAuth(_ref) {
                 var username = _ref.username, password = _ref.password;

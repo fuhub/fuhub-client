@@ -1,6 +1,6 @@
 export function makeAuthorizationHeader(options) {
 	if (options.token) {
-		return `Bearer  ${this.token}`;
+		return `Bearer  ${options.token}`;
 	}
 	return basicAuth(options);
 }
