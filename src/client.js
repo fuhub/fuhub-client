@@ -142,4 +142,12 @@ export default class Client extends EventEmitter {
 	logout() {
 		return this.postJSON('/api/logout', {});
 	}
+
+	me() {
+		return this.fetchJSON('/api/user');
+	}
+
+	currentUser() {
+		return this.me();
+	}
 }

@@ -13,7 +13,7 @@ export class UserCollection extends Collection {
 	}
 
 	me() {
-		return this.client.fetchJSON(`/api/user/me`);
+		return this.client.fetchJSON(`/api/user`);
 	}
 
 	current() {

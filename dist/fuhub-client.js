@@ -13657,6 +13657,16 @@
                 value: function() {
                     return this.postJSON("/api/logout", {});
                 }
+            }, {
+                key: "me",
+                value: function() {
+                    return this.fetchJSON("/api/user");
+                }
+            }, {
+                key: "currentUser",
+                value: function() {
+                    return this.me();
+                }
             } ]), Client;
         }(_eventemitter2["default"]);
         exports["default"] = Client;
@@ -13905,7 +13915,7 @@
             return _inherits(UserCollection, _Collection), _createClass(UserCollection, [ {
                 key: "me",
                 value: function() {
-                    return this.client.fetchJSON("/api/user/me");
+                    return this.client.fetchJSON("/api/user");
                 }
             }, {
                 key: "current",
