@@ -13903,9 +13903,14 @@
                 return _classCallCheck(this, UserCollection), _possibleConstructorReturn(this, Object.getPrototypeOf(UserCollection).call(this, client, name));
             }
             return _inherits(UserCollection, _Collection), _createClass(UserCollection, [ {
+                key: "me",
+                value: function() {
+                    return this.client.fetchJSON("/api/user/me");
+                }
+            }, {
                 key: "current",
                 value: function() {
-                    return this.client.fetchJSON(this.path + "/me");
+                    return this.me();
                 }
             } ]), UserCollection;
         }(_collection2["default"]);

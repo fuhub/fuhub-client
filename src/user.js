@@ -12,7 +12,11 @@ export class UserCollection extends Collection {
 		super(client, name);
 	}
 
+	me() {
+		return this.client.fetchJSON(`/api/user/me`);
+	}
+
 	current() {
-		return this.client.fetchJSON(`${this.path}/me`);
+		return this.me();
 	}
 }
