@@ -13664,7 +13664,7 @@
                 value: function(path) {
                     var _this2 = this, options = arguments.length <= 1 || void 0 === arguments[1] ? {} : arguments[1];
                     _lodash2["default"].isObject(options.body) && (options.body = JSON.stringify(options.body));
-                    var auth = this.makeAuth(), opts = _extends({
+                    var method = (options.method || "get").toLowerCase(), auth = this.makeAuth(), opts = _extends({
                         headers: {
                             Authorization: auth,
                             Accept: _mimeType2["default"].json,
@@ -13673,7 +13673,14 @@
                     }, options), onSuccess = function(response) {
                         return 401 === response.status ? (_this2.emitError({
                             type: "unauthorized"
-                        }), Promise.reject("unauthorized")) : response.json();
+                        }), Promise.reject("unauthorized")) : 200 === response.status && "delete" === method ? response : response.status >= 400 ? response.text().then(function(s) {
+                            try {
+                                var err = JSON.parse(s);
+                                return _this2.emitError(err), Promise.reject(err);
+                            } catch (err) {
+                                return _this2.emitError(err), Promise.reject(err);
+                            }
+                        }) : response.json();
                     };
                     return fetch(this.absurl(path), opts).then(onSuccess, function(err) {
                         return _this2.emitError(err);

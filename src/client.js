@@ -97,6 +97,7 @@ export default class Client extends EventEmitter {
 		if (_.isObject(options.body)) {
 			options.body = JSON.stringify(options.body); // eslint-disable-line
 		}
+		const method = (options.method || 'get').toLowerCase();
 		const auth = this.makeAuth();
 		const opts = {
 			headers: {
@@ -110,6 +111,21 @@ export default class Client extends EventEmitter {
 			if (response.status === 401) {
 				this.emitError({ type: 'unauthorized' });
 				return Promise.reject('unauthorized');
+			}
+			if (response.status === 200 && method === 'delete') {
+				return response;
+			}
+			if (response.status >= 400) {
+				return response.text().then(s => {
+					try {
+						const err = JSON.parse(s);
+						this.emitError(err);
+						return Promise.reject(err);
+					} catch (err) {
+						this.emitError(err);
+						return Promise.reject(err);
+					}
+				});
 			}
 			return response.json();
 		};
