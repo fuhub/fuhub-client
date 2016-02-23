@@ -8,6 +8,18 @@ export default class Resource {
 		this.path = `/api/${type}/${this.id}`;
 	}
 
+	fetchJSON(path, options = {}) {
+		return this.client.fetchJSON(path, options);
+	}
+
+	postJSON(path, body, extra = {}) {
+		return this.client.postJSON(path, body, extra);
+	}
+
+	putJSON(path, body, extra = {}) {
+		return this.client.putJSON(path, body, extra);
+	}
+
 	fetch() {
 		return this.client.fetchJSON(this.path);
 	}

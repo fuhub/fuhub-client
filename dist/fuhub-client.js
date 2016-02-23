@@ -1014,6 +1014,24 @@
                 this.path = "/api/" + type + "/" + this.id;
             }
             return _createClass(Resource, [ {
+                key: "fetchJSON",
+                value: function(path) {
+                    var options = arguments.length <= 1 || void 0 === arguments[1] ? {} : arguments[1];
+                    return this.client.fetchJSON(path, options);
+                }
+            }, {
+                key: "postJSON",
+                value: function(path, body) {
+                    var extra = arguments.length <= 2 || void 0 === arguments[2] ? {} : arguments[2];
+                    return this.client.postJSON(path, body, extra);
+                }
+            }, {
+                key: "putJSON",
+                value: function(path, body) {
+                    var extra = arguments.length <= 2 || void 0 === arguments[2] ? {} : arguments[2];
+                    return this.client.putJSON(path, body, extra);
+                }
+            }, {
                 key: "fetch",
                 value: function() {
                     return this.client.fetchJSON(this.path);
@@ -13459,11 +13477,28 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         });
-        var _resource = __webpack_require__(5), _resource2 = _interopRequireDefault(_resource), Channel = function(_Resource) {
+        var _createClass = function() {
+            function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                    var descriptor = props[i];
+                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                    "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+                }
+            }
+            return function(Constructor, protoProps, staticProps) {
+                return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
+                Constructor;
+            };
+        }(), _resource = __webpack_require__(5), _resource2 = _interopRequireDefault(_resource), Channel = function(_Resource) {
             function Channel(client, id) {
                 return _classCallCheck(this, Channel), _possibleConstructorReturn(this, Object.getPrototypeOf(Channel).call(this, client, "channel", id));
             }
-            return _inherits(Channel, _Resource), Channel;
+            return _inherits(Channel, _Resource), _createClass(Channel, [ {
+                key: "threads",
+                value: function() {
+                    return this.fetchJSON(this.path + "/threads");
+                }
+            } ]), Channel;
         }(_resource2["default"]);
         exports["default"] = Channel;
     }, /* 27 */
