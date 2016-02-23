@@ -6,6 +6,7 @@ import { User, UserCollection } from './user';
 import Channel from './channel';
 import Thread from './thread';
 import Message from './message';
+import Document from './document';
 import ResourceCollection from './collection';
 import mimeType from './mimeType';
 import urljoin from 'url-join';
@@ -24,6 +25,8 @@ function makeResource(client, resourceType, id) {
 		return new Thread(client, id);
 	case 'message':
 		return new Message(client, id);
+	case 'document':
+		return new Document(client, id);
 	default:
 		return new Resource(client, resourceType, id);
 	}
@@ -93,20 +96,20 @@ export default class Client extends EventEmitter {
 		return makeAuthorizationHeader(options);
 	}
 
-	fetchJSON(path, options = {}) {
+	fetch(path, options = {}) {
 		if (_.isObject(options.body)) {
 			options.body = JSON.stringify(options.body); // eslint-disable-line
 		}
 		const method = (options.method || 'get').toLowerCase();
 		const auth = this.makeAuth();
-		const opts = {
-			headers: {
-				Authorization: auth,
-				Accept: mimeType.json,
-				'Content-Type': mimeType.json,
-			},
-			...options,
+		const headers = {
+			...(options.headers || {}),
+			Authorization: auth,
 		};
+		if (options.hasOwnProperty('body')) {
+			headers['Content-Type'] = mimeType.json;
+		}
+		const opts = { ...options, headers };
 		const onSuccess = response => {
 			if (response.status === 401) {
 				this.emitError({ type: 'unauthorized' });
@@ -127,9 +130,20 @@ export default class Client extends EventEmitter {
 					}
 				});
 			}
-			return response.json();
+			return response;
 		};
 		return fetch(this.absurl(path), opts).then(onSuccess, err => this.emitError(err));
+	}
+
+	fetchJSON(path, options = {}) {
+		const opts = {
+			...options,
+			headers: {
+				...(options.headers || {}),
+				Accept: mimeType.json,
+			},
+		};
+		return this.fetch(path, opts).then(r => r.json());
 	}
 
 	postJSON(path, body, extra = {}) {
@@ -141,7 +155,7 @@ export default class Client extends EventEmitter {
 	}
 
 	delete(url) {
-		return this.fetchJSON(url, { method: 'delete' });
+		return this.fetch(url, { method: 'delete' });
 	}
 
 	token() {
