@@ -8,6 +8,10 @@ export default class Thread extends Resource {
 		super(client, 'thread', id);
 	}
 
+	messages() {
+		return this.fetchJSON(`${this.path}/messages`);
+	}
+
 	sendMessage(msg) {
 		let payload = msg;
 		if (typeof msg === 'string') {

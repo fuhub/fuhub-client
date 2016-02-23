@@ -227,7 +227,7 @@
                 return that;
             }
             function fromString(that, string, encoding) {
-                ("string" != typeof encoding || "" === encoding) && (encoding = "utf8");
+                "string" == typeof encoding && "" !== encoding || (encoding = "utf8");
                 // Assumption: byteLength() return value is always < kMaxLength.
                 var length = 0 | byteLength(string, encoding);
                 return that = allocate(that, length), that.write(string, encoding), that;
@@ -1834,6 +1834,18 @@
                     return object.index - other.index;
                 }
                 /**
+	   * Gets the number of `placeholder` occurrences in `array`.
+	   *
+	   * @private
+	   * @param {Array} array The array to inspect.
+	   * @param {*} placeholder The placeholder to search for.
+	   * @returns {number} Returns the placeholder count.
+	   */
+                function countHolders(array, placeholder) {
+                    for (var length = array.length, result = 0; length--; ) array[length] === placeholder && result++;
+                    return result;
+                }
+                /**
 	   * Used by `_.deburr` to convert latin-1 supplementary letters to basic latin letters.
 	   *
 	   * @private
@@ -1941,8 +1953,10 @@
 	   * @returns {Array} Returns the new array of placeholder indexes.
 	   */
                 function replaceHolders(array, placeholder) {
-                    for (var index = -1, length = array.length, resIndex = -1, result = []; ++index < length; ) array[index] === placeholder && (array[index] = PLACEHOLDER, 
-                    result[++resIndex] = index);
+                    for (var index = -1, length = array.length, resIndex = -1, result = []; ++index < length; ) {
+                        var value = array[index];
+                        value !== placeholder && value !== PLACEHOLDER || (array[index] = PLACEHOLDER, result[++resIndex] = index);
+                    }
                     return result;
                 }
                 /**
@@ -2585,7 +2599,7 @@
 	     * @param {*} value The value to assign.
 	     */
                     function assignMergeValue(object, key, value) {
-                        (value !== undefined && !eq(object[key], value) || "number" == typeof key && value === undefined && !(key in object)) && (object[key] = value);
+                        (value === undefined || eq(object[key], value)) && ("number" != typeof key || value !== undefined || key in object) || (object[key] = value);
                     }
                     /**
 	     * Assigns `value` to `key` of `object` if the existing value is not equivalent
@@ -2599,7 +2613,7 @@
 	     */
                     function assignValue(object, key, value) {
                         var objValue = object[key];
-                        (!eq(objValue, value) || eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key) || value === undefined && !(key in object)) && (object[key] = value);
+                        hasOwnProperty.call(object, key) && eq(objValue, value) && (value !== undefined || key in object) || (object[key] = value);
                     }
                     /**
 	     * Aggregates elements of `collection` on `accumulator` with keys transformed
@@ -3688,12 +3702,13 @@
 	     * @param {Array|Object} args The provided arguments.
 	     * @param {Array} partials The arguments to prepend to those provided.
 	     * @param {Array} holders The `partials` placeholder indexes.
+	     * @params {boolean} [isCurried] Specify composing for a curried function.
 	     * @returns {Array} Returns the new array of composed arguments.
 	     */
-                    function composeArgs(args, partials, holders) {
-                        for (var holdersLength = holders.length, argsIndex = -1, argsLength = nativeMax(args.length - holdersLength, 0), leftIndex = -1, leftLength = partials.length, result = Array(leftLength + argsLength); ++leftIndex < leftLength; ) result[leftIndex] = partials[leftIndex];
-                        for (;++argsIndex < holdersLength; ) result[holders[argsIndex]] = args[argsIndex];
-                        for (;argsLength--; ) result[leftIndex++] = args[argsIndex++];
+                    function composeArgs(args, partials, holders, isCurried) {
+                        for (var argsIndex = -1, argsLength = args.length, holdersLength = holders.length, leftIndex = -1, leftLength = partials.length, rangeLength = nativeMax(argsLength - holdersLength, 0), result = Array(leftLength + rangeLength), isUncurried = !isCurried; ++leftIndex < leftLength; ) result[leftIndex] = partials[leftIndex];
+                        for (;++argsIndex < holdersLength; ) (isUncurried || argsLength > argsIndex) && (result[holders[argsIndex]] = args[argsIndex]);
+                        for (;rangeLength--; ) result[leftIndex++] = args[argsIndex++];
                         return result;
                     }
                     /**
@@ -3704,12 +3719,13 @@
 	     * @param {Array|Object} args The provided arguments.
 	     * @param {Array} partials The arguments to append to those provided.
 	     * @param {Array} holders The `partials` placeholder indexes.
+	     * @params {boolean} [isCurried] Specify composing for a curried function.
 	     * @returns {Array} Returns the new array of composed arguments.
 	     */
-                    function composeArgsRight(args, partials, holders) {
-                        for (var holdersIndex = -1, holdersLength = holders.length, argsIndex = -1, argsLength = nativeMax(args.length - holdersLength, 0), rightIndex = -1, rightLength = partials.length, result = Array(argsLength + rightLength); ++argsIndex < argsLength; ) result[argsIndex] = args[argsIndex];
+                    function composeArgsRight(args, partials, holders, isCurried) {
+                        for (var argsIndex = -1, argsLength = args.length, holdersIndex = -1, holdersLength = holders.length, rightIndex = -1, rightLength = partials.length, rangeLength = nativeMax(argsLength - holdersLength, 0), result = Array(rangeLength + rightLength), isUncurried = !isCurried; ++argsIndex < rangeLength; ) result[argsIndex] = args[argsIndex];
                         for (var offset = argsIndex; ++rightIndex < rightLength; ) result[offset + rightIndex] = partials[rightIndex];
-                        for (;++holdersIndex < holdersLength; ) result[offset + holders[holdersIndex]] = args[argsIndex++];
+                        for (;++holdersIndex < holdersLength; ) (isUncurried || argsLength > argsIndex) && (result[offset + holders[holdersIndex]] = args[argsIndex++]);
                         return result;
                     }
                     /**
@@ -3932,9 +3948,11 @@
 	     */
                     function createCurryWrapper(func, bitmask, arity) {
                         function wrapper() {
-                            for (var length = arguments.length, index = length, args = Array(length), fn = this && this !== root && this instanceof wrapper ? Ctor : func, placeholder = lodash.placeholder || wrapper.placeholder; index--; ) args[index] = arguments[index];
+                            for (var length = arguments.length, args = Array(length), index = length, placeholder = getPlaceholder(wrapper); index--; ) args[index] = arguments[index];
                             var holders = 3 > length && args[0] !== placeholder && args[length - 1] !== placeholder ? [] : replaceHolders(args, placeholder);
-                            return length -= holders.length, arity > length ? createRecurryWrapper(func, bitmask, createHybridWrapper, placeholder, undefined, args, holders, undefined, undefined, arity - length) : apply(fn, this, args);
+                            if (length -= holders.length, arity > length) return createRecurryWrapper(func, bitmask, createHybridWrapper, wrapper.placeholder, undefined, args, holders, undefined, undefined, arity - length);
+                            var fn = this && this !== root && this instanceof wrapper ? Ctor : func;
+                            return apply(fn, this, args);
                         }
                         var Ctor = createCtorWrapper(func);
                         return wrapper;
@@ -3988,17 +4006,18 @@
                     function createHybridWrapper(func, bitmask, thisArg, partials, holders, partialsRight, holdersRight, argPos, ary, arity) {
                         function wrapper() {
                             for (var length = arguments.length, index = length, args = Array(length); index--; ) args[index] = arguments[index];
-                            if (partials && (args = composeArgs(args, partials, holders)), partialsRight && (args = composeArgsRight(args, partialsRight, holdersRight)), 
-                            isCurry || isCurryRight) {
-                                var placeholder = lodash.placeholder || wrapper.placeholder, argsHolders = replaceHolders(args, placeholder);
-                                if (length -= argsHolders.length, arity > length) return createRecurryWrapper(func, bitmask, createHybridWrapper, placeholder, thisArg, args, argsHolders, argPos, ary, arity - length);
+                            if (isCurried) var placeholder = getPlaceholder(wrapper), holdersCount = countHolders(args, placeholder);
+                            if (partials && (args = composeArgs(args, partials, holders, isCurried)), partialsRight && (args = composeArgsRight(args, partialsRight, holdersRight, isCurried)), 
+                            length -= holdersCount, isCurried && arity > length) {
+                                var newHolders = replaceHolders(args, placeholder);
+                                return createRecurryWrapper(func, bitmask, createHybridWrapper, wrapper.placeholder, thisArg, args, newHolders, argPos, ary, arity - length);
                             }
                             var thisBinding = isBind ? thisArg : this, fn = isBindKey ? thisBinding[func] : func;
-                            return argPos ? args = reorder(args, argPos) : isFlip && args.length > 1 && args.reverse(), 
-                            isAry && ary < args.length && (args.length = ary), this && this !== root && this instanceof wrapper && (fn = Ctor || createCtorWrapper(fn)), 
+                            return length = args.length, argPos ? args = reorder(args, argPos) : isFlip && length > 1 && args.reverse(), 
+                            isAry && length > ary && (args.length = ary), this && this !== root && this instanceof wrapper && (fn = Ctor || createCtorWrapper(fn)), 
                             fn.apply(thisBinding, args);
                         }
-                        var isAry = bitmask & ARY_FLAG, isBind = bitmask & BIND_FLAG, isBindKey = bitmask & BIND_KEY_FLAG, isCurry = bitmask & CURRY_FLAG, isCurryRight = bitmask & CURRY_RIGHT_FLAG, isFlip = bitmask & FLIP_FLAG, Ctor = isBindKey ? undefined : createCtorWrapper(func);
+                        var isAry = bitmask & ARY_FLAG, isBind = bitmask & BIND_FLAG, isBindKey = bitmask & BIND_KEY_FLAG, isCurried = bitmask & (CURRY_FLAG | CURRY_RIGHT_FLAG), isFlip = bitmask & FLIP_FLAG, Ctor = isBindKey ? undefined : createCtorWrapper(func);
                         return wrapper;
                     }
                     /**
@@ -4094,7 +4113,7 @@
 	     * @param {Function} func The function to wrap.
 	     * @param {number} bitmask The bitmask of wrapper flags. See `createWrapper` for more details.
 	     * @param {Function} wrapFunc The function to create the `func` wrapper.
-	     * @param {*} placeholder The placeholder to replace.
+	     * @param {*} placeholder The placeholder value.
 	     * @param {*} [thisArg] The `this` binding of `func`.
 	     * @param {Array} [partials] The arguments to prepend to those provided to the new function.
 	     * @param {Array} [holders] The `partials` placeholder indexes.
@@ -4104,10 +4123,10 @@
 	     * @returns {Function} Returns the new wrapped function.
 	     */
                     function createRecurryWrapper(func, bitmask, wrapFunc, placeholder, thisArg, partials, holders, argPos, ary, arity) {
-                        var isCurry = bitmask & CURRY_FLAG, newArgPos = argPos ? copyArray(argPos) : undefined, newsHolders = isCurry ? holders : undefined, newHoldersRight = isCurry ? undefined : holders, newPartials = isCurry ? partials : undefined, newPartialsRight = isCurry ? undefined : partials;
+                        var isCurry = bitmask & CURRY_FLAG, newArgPos = argPos ? copyArray(argPos) : undefined, newHolders = isCurry ? holders : undefined, newHoldersRight = isCurry ? undefined : holders, newPartials = isCurry ? partials : undefined, newPartialsRight = isCurry ? undefined : partials;
                         bitmask |= isCurry ? PARTIAL_FLAG : PARTIAL_RIGHT_FLAG, bitmask &= ~(isCurry ? PARTIAL_RIGHT_FLAG : PARTIAL_FLAG), 
                         bitmask & CURRY_BOUND_FLAG || (bitmask &= ~(BIND_FLAG | BIND_KEY_FLAG));
-                        var newData = [ func, bitmask, thisArg, newPartials, newsHolders, newPartialsRight, newHoldersRight, newArgPos, ary, arity ], result = wrapFunc.apply(undefined, newData);
+                        var newData = [ func, bitmask, thisArg, newPartials, newHolders, newPartialsRight, newHoldersRight, newArgPos, ary, arity ], result = wrapFunc.apply(undefined, newData);
                         return isLaziable(func) && setData(result, newData), result.placeholder = placeholder, 
                         result;
                     }
@@ -4236,7 +4255,7 @@
                     function equalByTag(object, other, tag, equalFunc, customizer, bitmask) {
                         switch (tag) {
                           case arrayBufferTag:
-                            return object.byteLength == other.byteLength && equalFunc(new Uint8Array(object), new Uint8Array(other)) ? !0 : !1;
+                            return !(object.byteLength != other.byteLength || !equalFunc(new Uint8Array(object), new Uint8Array(other)));
 
                           case boolTag:
                           case dateTag:
@@ -4365,6 +4384,17 @@
                         return isNative(value) ? value : undefined;
                     }
                     /**
+	     * Gets the argument placeholder value for `func`.
+	     *
+	     * @private
+	     * @param {Function} func The function to inspect.
+	     * @returns {*} Returns the placeholder value.
+	     */
+                    function getPlaceholder(func) {
+                        var object = hasOwnProperty.call(lodash, "placeholder") ? lodash : func;
+                        return object.placeholder;
+                    }
+                    /**
 	     * Gets the `toStringTag` of `value`.
 	     *
 	     * @private
@@ -4447,9 +4477,7 @@
 	     * @returns {Object} Returns the initialized clone.
 	     */
                     function initCloneObject(object) {
-                        if (isPrototype(object)) return {};
-                        var Ctor = object.constructor;
-                        return baseCreate(isFunction(Ctor) ? Ctor.prototype : undefined);
+                        return isFunction(object.constructor) && !isPrototype(object) ? baseCreate(getPrototypeOf(object)) : {};
                     }
                     /**
 	     * Initializes an object clone based on its `toStringTag`.
@@ -4571,7 +4599,7 @@
 	     * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
 	     */
                     function isPrototype(value) {
-                        var Ctor = value && value.constructor, proto = "function" == typeof Ctor && Ctor.prototype || objectProto;
+                        var Ctor = value && value.constructor, proto = isFunction(Ctor) && Ctor.prototype || objectProto;
                         return value === proto;
                     }
                     /**
@@ -5232,10 +5260,11 @@
                     }
                     /**
 	     * Removes all elements from `array` that `predicate` returns truthy for
-	     * and returns an array of the removed elements. The predicate is invoked with
-	     * three arguments: (value, index, array).
+	     * and returns an array of the removed elements. The predicate is invoked
+	     * with three arguments: (value, index, array).
 	     *
-	     * **Note:** Unlike `_.filter`, this method mutates `array`.
+	     * **Note:** Unlike `_.filter`, this method mutates `array`. Use `_.pull`
+	     * to pull elements from an array by value.
 	     *
 	     * @static
 	     * @memberOf _
@@ -6734,7 +6763,7 @@
                     function curry(func, arity, guard) {
                         arity = guard ? undefined : arity;
                         var result = createWrapper(func, CURRY_FLAG, undefined, undefined, undefined, undefined, undefined, arity);
-                        return result.placeholder = lodash.placeholder || curry.placeholder, result;
+                        return result.placeholder = curry.placeholder, result;
                     }
                     /**
 	     * This method is like `_.curry` except that arguments are applied to `func`
@@ -6776,7 +6805,7 @@
                     function curryRight(func, arity, guard) {
                         arity = guard ? undefined : arity;
                         var result = createWrapper(func, CURRY_RIGHT_FLAG, undefined, undefined, undefined, undefined, undefined, arity);
-                        return result.placeholder = lodash.placeholder || curryRight.placeholder, result;
+                        return result.placeholder = curryRight.placeholder, result;
                     }
                     /**
 	     * Creates a debounced function that delays invoking `func` until after `wait`
@@ -7643,9 +7672,7 @@
 	     * // => false
 	     */
                     function isError(value) {
-                        if (!isObjectLike(value)) return !1;
-                        var Ctor = value.constructor;
-                        return objectToString.call(value) == errorTag || "function" == typeof Ctor && objectToString.call(Ctor.prototype) == errorTag;
+                        return isObjectLike(value) ? objectToString.call(value) == errorTag || "string" == typeof value.message && "string" == typeof value.name : !1;
                     }
                     /**
 	     * Checks if `value` is a finite primitive number.
@@ -8030,8 +8057,8 @@
 	     */
                     function isPlainObject(value) {
                         if (!isObjectLike(value) || objectToString.call(value) != objectTag || isHostObject(value)) return !1;
-                        var proto = objectProto;
-                        if ("function" == typeof value.constructor && (proto = getPrototypeOf(value)), null === proto) return !0;
+                        var proto = getPrototypeOf(value);
+                        if (null === proto) return !0;
                         var Ctor = proto.constructor;
                         return "function" == typeof Ctor && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
                     }
@@ -8882,7 +8909,8 @@
                     /**
 	     * The opposite of `_.mapValues`; this method creates an object with the
 	     * same values as `object` and keys generated by running each own enumerable
-	     * property of `object` through `iteratee`.
+	     * property of `object` through `iteratee`. The iteratee is invoked with
+	     * three arguments: (value, key, object).
 	     *
 	     * @static
 	     * @memberOf _
@@ -8906,7 +8934,7 @@
                     /**
 	     * Creates an object with the same keys as `object` and values generated by
 	     * running each own enumerable property of `object` through `iteratee`. The
-	     * iteratee function is invoked with three arguments: (value, key, object).
+	     * iteratee is invoked with three arguments: (value, key, object).
 	     *
 	     * @static
 	     * @memberOf _
@@ -8935,9 +8963,10 @@
                         }), result;
                     }
                     /**
-	     * The opposite of `_.pickBy`; this method creates an object composed of the
-	     * own and inherited enumerable properties of `object` that `predicate`
-	     * doesn't return truthy for.
+	     * The opposite of `_.pickBy`; this method creates an object composed of
+	     * the own and inherited enumerable properties of `object` that `predicate`
+	     * doesn't return truthy for. The predicate is invoked with two arguments:
+	     * (value, key).
 	     *
 	     * @static
 	     * @memberOf _
@@ -8953,7 +8982,7 @@
 	     * // => { 'b': '2' }
 	     */
                     function omitBy(object, predicate) {
-                        return predicate = getIteratee(predicate, 2), basePickBy(object, function(value, key) {
+                        return predicate = getIteratee(predicate), basePickBy(object, function(value, key) {
                             return !predicate(value, key);
                         });
                     }
@@ -8975,7 +9004,7 @@
 	     * // => { 'a': 1, 'c': 3 }
 	     */
                     function pickBy(object, predicate) {
-                        return null == object ? {} : basePickBy(object, getIteratee(predicate, 2));
+                        return null == object ? {} : basePickBy(object, getIteratee(predicate));
                     }
                     /**
 	     * This method is like `_.get` except that if the resolved value is a function
@@ -9147,7 +9176,7 @@
                         var isArr = isArray(object) || isTypedArray(object);
                         if (iteratee = getIteratee(iteratee, 4), null == accumulator) if (isArr || isObject(object)) {
                             var Ctor = object.constructor;
-                            accumulator = isArr ? isArray(object) ? new Ctor() : [] : baseCreate(isFunction(Ctor) ? Ctor.prototype : undefined);
+                            accumulator = isArr ? isArray(object) ? new Ctor() : [] : isFunction(Ctor) ? baseCreate(getPrototypeOf(object)) : {};
                         } else accumulator = {};
                         return (isArr ? arrayEach : baseForOwn)(object, function(value, index, object) {
                             return iteratee(accumulator, value, index, object);
@@ -10362,8 +10391,8 @@
                         };
                     }
                     /**
-	     * Invokes the iteratee function `n` times, returning an array of the results
-	     * of each invocation. The iteratee is invoked with one argument; (index).
+	     * Invokes the iteratee `n` times, returning an array of the results of
+	     * each invocation. The iteratee is invoked with one argument; (index).
 	     *
 	     * @static
 	     * @memberOf _
@@ -10831,14 +10860,14 @@
                     }), now = Date.now, bind = rest(function(func, thisArg, partials) {
                         var bitmask = BIND_FLAG;
                         if (partials.length) {
-                            var placeholder = lodash.placeholder || bind.placeholder, holders = replaceHolders(partials, placeholder);
+                            var holders = replaceHolders(partials, getPlaceholder(bind));
                             bitmask |= PARTIAL_FLAG;
                         }
                         return createWrapper(func, bitmask, thisArg, partials, holders);
                     }), bindKey = rest(function(object, key, partials) {
                         var bitmask = BIND_FLAG | BIND_KEY_FLAG;
                         if (partials.length) {
-                            var placeholder = lodash.placeholder || bindKey.placeholder, holders = replaceHolders(partials, placeholder);
+                            var holders = replaceHolders(partials, getPlaceholder(bindKey));
                             bitmask |= PARTIAL_FLAG;
                         }
                         return createWrapper(key, bitmask, object, partials, holders);
@@ -10854,10 +10883,10 @@
                             return apply(func, this, args);
                         });
                     }), partial = rest(function(func, partials) {
-                        var placeholder = lodash.placeholder || partial.placeholder, holders = replaceHolders(partials, placeholder);
+                        var holders = replaceHolders(partials, getPlaceholder(partial));
                         return createWrapper(func, PARTIAL_FLAG, undefined, partials, holders);
                     }), partialRight = rest(function(func, partials) {
-                        var placeholder = lodash.placeholder || partialRight.placeholder, holders = replaceHolders(partials, placeholder);
+                        var holders = replaceHolders(partials, getPlaceholder(partialRight));
                         return createWrapper(func, PARTIAL_RIGHT_FLAG, undefined, partials, holders);
                     }), rearg = rest(function(func, indexes) {
                         return createWrapper(func, REARG_FLAG, undefined, undefined, undefined, baseFlatten(indexes, 1));
@@ -11155,7 +11184,7 @@
                     iteratorSymbol && (lodash.prototype[iteratorSymbol] = wrapperToIterator), lodash;
                 }
                 /** Used as a safe reference for `undefined` in pre-ES5 environments. */
-                var undefined, VERSION = "4.5.0", BIND_FLAG = 1, BIND_KEY_FLAG = 2, CURRY_BOUND_FLAG = 4, CURRY_FLAG = 8, CURRY_RIGHT_FLAG = 16, PARTIAL_FLAG = 32, PARTIAL_RIGHT_FLAG = 64, ARY_FLAG = 128, REARG_FLAG = 256, FLIP_FLAG = 512, UNORDERED_COMPARE_FLAG = 1, PARTIAL_COMPARE_FLAG = 2, DEFAULT_TRUNC_LENGTH = 30, DEFAULT_TRUNC_OMISSION = "...", HOT_COUNT = 150, HOT_SPAN = 16, LARGE_ARRAY_SIZE = 200, LAZY_FILTER_FLAG = 1, LAZY_MAP_FLAG = 2, LAZY_WHILE_FLAG = 3, FUNC_ERROR_TEXT = "Expected a function", HASH_UNDEFINED = "__lodash_hash_undefined__", INFINITY = 1 / 0, MAX_SAFE_INTEGER = 9007199254740991, MAX_INTEGER = 1.7976931348623157e308, NAN = NaN, MAX_ARRAY_LENGTH = 4294967295, MAX_ARRAY_INDEX = MAX_ARRAY_LENGTH - 1, HALF_MAX_ARRAY_LENGTH = MAX_ARRAY_LENGTH >>> 1, PLACEHOLDER = "__lodash_placeholder__", argsTag = "[object Arguments]", arrayTag = "[object Array]", boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", mapTag = "[object Map]", numberTag = "[object Number]", objectTag = "[object Object]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag = "[object Symbol]", weakMapTag = "[object WeakMap]", weakSetTag = "[object WeakSet]", arrayBufferTag = "[object ArrayBuffer]", float32Tag = "[object Float32Array]", float64Tag = "[object Float64Array]", int8Tag = "[object Int8Array]", int16Tag = "[object Int16Array]", int32Tag = "[object Int32Array]", uint8Tag = "[object Uint8Array]", uint8ClampedTag = "[object Uint8ClampedArray]", uint16Tag = "[object Uint16Array]", uint32Tag = "[object Uint32Array]", reEmptyStringLeading = /\b__p \+= '';/g, reEmptyStringMiddle = /\b(__p \+=) '' \+/g, reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g, reEscapedHtml = /&(?:amp|lt|gt|quot|#39|#96);/g, reUnescapedHtml = /[&<>"'`]/g, reHasEscapedHtml = RegExp(reEscapedHtml.source), reHasUnescapedHtml = RegExp(reUnescapedHtml.source), reEscape = /<%-([\s\S]+?)%>/g, reEvaluate = /<%([\s\S]+?)%>/g, reInterpolate = /<%=([\s\S]+?)%>/g, reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/, rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]/g, reRegExpChar = /[\\^$.*+?()[\]{}|]/g, reHasRegExpChar = RegExp(reRegExpChar.source), reTrim = /^\s+|\s+$/g, reTrimStart = /^\s+/, reTrimEnd = /\s+$/, reEscapeChar = /\\(\\)?/g, reEsTemplate = /\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g, reFlags = /\w*$/, reHasHexPrefix = /^0x/i, reIsBadHex = /^[-+]0x[0-9a-f]+$/i, reIsBinary = /^0b[01]+$/i, reIsHostCtor = /^\[object .+?Constructor\]$/, reIsOctal = /^0o[0-7]+$/i, reIsUint = /^(?:0|[1-9]\d*)$/, reLatin1 = /[\xc0-\xd6\xd8-\xde\xdf-\xf6\xf8-\xff]/g, reNoMatch = /($^)/, reUnescapedString = /['\n\r\u2028\u2029\\]/g, rsAstralRange = "\\ud800-\\udfff", rsComboMarksRange = "\\u0300-\\u036f\\ufe20-\\ufe23", rsComboSymbolsRange = "\\u20d0-\\u20f0", rsDingbatRange = "\\u2700-\\u27bf", rsLowerRange = "a-z\\xdf-\\xf6\\xf8-\\xff", rsMathOpRange = "\\xac\\xb1\\xd7\\xf7", rsNonCharRange = "\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf", rsQuoteRange = "\\u2018\\u2019\\u201c\\u201d", rsSpaceRange = " \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000", rsUpperRange = "A-Z\\xc0-\\xd6\\xd8-\\xde", rsVarRange = "\\ufe0e\\ufe0f", rsBreakRange = rsMathOpRange + rsNonCharRange + rsQuoteRange + rsSpaceRange, rsAstral = "[" + rsAstralRange + "]", rsBreak = "[" + rsBreakRange + "]", rsCombo = "[" + rsComboMarksRange + rsComboSymbolsRange + "]", rsDigits = "\\d+", rsDingbat = "[" + rsDingbatRange + "]", rsLower = "[" + rsLowerRange + "]", rsMisc = "[^" + rsAstralRange + rsBreakRange + rsDigits + rsDingbatRange + rsLowerRange + rsUpperRange + "]", rsFitz = "\\ud83c[\\udffb-\\udfff]", rsModifier = "(?:" + rsCombo + "|" + rsFitz + ")", rsNonAstral = "[^" + rsAstralRange + "]", rsRegional = "(?:\\ud83c[\\udde6-\\uddff]){2}", rsSurrPair = "[\\ud800-\\udbff][\\udc00-\\udfff]", rsUpper = "[" + rsUpperRange + "]", rsZWJ = "\\u200d", rsLowerMisc = "(?:" + rsLower + "|" + rsMisc + ")", rsUpperMisc = "(?:" + rsUpper + "|" + rsMisc + ")", reOptMod = rsModifier + "?", rsOptVar = "[" + rsVarRange + "]?", rsOptJoin = "(?:" + rsZWJ + "(?:" + [ rsNonAstral, rsRegional, rsSurrPair ].join("|") + ")" + rsOptVar + reOptMod + ")*", rsSeq = rsOptVar + reOptMod + rsOptJoin, rsEmoji = "(?:" + [ rsDingbat, rsRegional, rsSurrPair ].join("|") + ")" + rsSeq, rsSymbol = "(?:" + [ rsNonAstral + rsCombo + "?", rsCombo, rsRegional, rsSurrPair, rsAstral ].join("|") + ")", reComboMark = RegExp(rsCombo, "g"), reComplexSymbol = RegExp(rsFitz + "(?=" + rsFitz + ")|" + rsSymbol + rsSeq, "g"), reHasComplexSymbol = RegExp("[" + rsZWJ + rsAstralRange + rsComboMarksRange + rsComboSymbolsRange + rsVarRange + "]"), reBasicWord = /[a-zA-Z0-9]+/g, reComplexWord = RegExp([ rsUpper + "?" + rsLower + "+(?=" + [ rsBreak, rsUpper, "$" ].join("|") + ")", rsUpperMisc + "+(?=" + [ rsBreak, rsUpper + rsLowerMisc, "$" ].join("|") + ")", rsUpper + "?" + rsLowerMisc + "+", rsUpper + "+", rsDigits, rsEmoji ].join("|"), "g"), reHasComplexWord = /[a-z][A-Z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/, contextProps = [ "Array", "Buffer", "Date", "Error", "Float32Array", "Float64Array", "Function", "Int8Array", "Int16Array", "Int32Array", "Map", "Math", "Object", "Reflect", "RegExp", "Set", "String", "Symbol", "TypeError", "Uint8Array", "Uint8ClampedArray", "Uint16Array", "Uint32Array", "WeakMap", "_", "clearTimeout", "isFinite", "parseInt", "setTimeout" ], templateCounter = -1, typedArrayTags = {};
+                var undefined, VERSION = "4.5.1", BIND_FLAG = 1, BIND_KEY_FLAG = 2, CURRY_BOUND_FLAG = 4, CURRY_FLAG = 8, CURRY_RIGHT_FLAG = 16, PARTIAL_FLAG = 32, PARTIAL_RIGHT_FLAG = 64, ARY_FLAG = 128, REARG_FLAG = 256, FLIP_FLAG = 512, UNORDERED_COMPARE_FLAG = 1, PARTIAL_COMPARE_FLAG = 2, DEFAULT_TRUNC_LENGTH = 30, DEFAULT_TRUNC_OMISSION = "...", HOT_COUNT = 150, HOT_SPAN = 16, LARGE_ARRAY_SIZE = 200, LAZY_FILTER_FLAG = 1, LAZY_MAP_FLAG = 2, LAZY_WHILE_FLAG = 3, FUNC_ERROR_TEXT = "Expected a function", HASH_UNDEFINED = "__lodash_hash_undefined__", INFINITY = 1 / 0, MAX_SAFE_INTEGER = 9007199254740991, MAX_INTEGER = 1.7976931348623157e308, NAN = NaN, MAX_ARRAY_LENGTH = 4294967295, MAX_ARRAY_INDEX = MAX_ARRAY_LENGTH - 1, HALF_MAX_ARRAY_LENGTH = MAX_ARRAY_LENGTH >>> 1, PLACEHOLDER = "__lodash_placeholder__", argsTag = "[object Arguments]", arrayTag = "[object Array]", boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", mapTag = "[object Map]", numberTag = "[object Number]", objectTag = "[object Object]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag = "[object Symbol]", weakMapTag = "[object WeakMap]", weakSetTag = "[object WeakSet]", arrayBufferTag = "[object ArrayBuffer]", float32Tag = "[object Float32Array]", float64Tag = "[object Float64Array]", int8Tag = "[object Int8Array]", int16Tag = "[object Int16Array]", int32Tag = "[object Int32Array]", uint8Tag = "[object Uint8Array]", uint8ClampedTag = "[object Uint8ClampedArray]", uint16Tag = "[object Uint16Array]", uint32Tag = "[object Uint32Array]", reEmptyStringLeading = /\b__p \+= '';/g, reEmptyStringMiddle = /\b(__p \+=) '' \+/g, reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g, reEscapedHtml = /&(?:amp|lt|gt|quot|#39|#96);/g, reUnescapedHtml = /[&<>"'`]/g, reHasEscapedHtml = RegExp(reEscapedHtml.source), reHasUnescapedHtml = RegExp(reUnescapedHtml.source), reEscape = /<%-([\s\S]+?)%>/g, reEvaluate = /<%([\s\S]+?)%>/g, reInterpolate = /<%=([\s\S]+?)%>/g, reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/, rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]/g, reRegExpChar = /[\\^$.*+?()[\]{}|]/g, reHasRegExpChar = RegExp(reRegExpChar.source), reTrim = /^\s+|\s+$/g, reTrimStart = /^\s+/, reTrimEnd = /\s+$/, reEscapeChar = /\\(\\)?/g, reEsTemplate = /\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g, reFlags = /\w*$/, reHasHexPrefix = /^0x/i, reIsBadHex = /^[-+]0x[0-9a-f]+$/i, reIsBinary = /^0b[01]+$/i, reIsHostCtor = /^\[object .+?Constructor\]$/, reIsOctal = /^0o[0-7]+$/i, reIsUint = /^(?:0|[1-9]\d*)$/, reLatin1 = /[\xc0-\xd6\xd8-\xde\xdf-\xf6\xf8-\xff]/g, reNoMatch = /($^)/, reUnescapedString = /['\n\r\u2028\u2029\\]/g, rsAstralRange = "\\ud800-\\udfff", rsComboMarksRange = "\\u0300-\\u036f\\ufe20-\\ufe23", rsComboSymbolsRange = "\\u20d0-\\u20f0", rsDingbatRange = "\\u2700-\\u27bf", rsLowerRange = "a-z\\xdf-\\xf6\\xf8-\\xff", rsMathOpRange = "\\xac\\xb1\\xd7\\xf7", rsNonCharRange = "\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf", rsQuoteRange = "\\u2018\\u2019\\u201c\\u201d", rsSpaceRange = " \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000", rsUpperRange = "A-Z\\xc0-\\xd6\\xd8-\\xde", rsVarRange = "\\ufe0e\\ufe0f", rsBreakRange = rsMathOpRange + rsNonCharRange + rsQuoteRange + rsSpaceRange, rsAstral = "[" + rsAstralRange + "]", rsBreak = "[" + rsBreakRange + "]", rsCombo = "[" + rsComboMarksRange + rsComboSymbolsRange + "]", rsDigits = "\\d+", rsDingbat = "[" + rsDingbatRange + "]", rsLower = "[" + rsLowerRange + "]", rsMisc = "[^" + rsAstralRange + rsBreakRange + rsDigits + rsDingbatRange + rsLowerRange + rsUpperRange + "]", rsFitz = "\\ud83c[\\udffb-\\udfff]", rsModifier = "(?:" + rsCombo + "|" + rsFitz + ")", rsNonAstral = "[^" + rsAstralRange + "]", rsRegional = "(?:\\ud83c[\\udde6-\\uddff]){2}", rsSurrPair = "[\\ud800-\\udbff][\\udc00-\\udfff]", rsUpper = "[" + rsUpperRange + "]", rsZWJ = "\\u200d", rsLowerMisc = "(?:" + rsLower + "|" + rsMisc + ")", rsUpperMisc = "(?:" + rsUpper + "|" + rsMisc + ")", reOptMod = rsModifier + "?", rsOptVar = "[" + rsVarRange + "]?", rsOptJoin = "(?:" + rsZWJ + "(?:" + [ rsNonAstral, rsRegional, rsSurrPair ].join("|") + ")" + rsOptVar + reOptMod + ")*", rsSeq = rsOptVar + reOptMod + rsOptJoin, rsEmoji = "(?:" + [ rsDingbat, rsRegional, rsSurrPair ].join("|") + ")" + rsSeq, rsSymbol = "(?:" + [ rsNonAstral + rsCombo + "?", rsCombo, rsRegional, rsSurrPair, rsAstral ].join("|") + ")", reComboMark = RegExp(rsCombo, "g"), reComplexSymbol = RegExp(rsFitz + "(?=" + rsFitz + ")|" + rsSymbol + rsSeq, "g"), reHasComplexSymbol = RegExp("[" + rsZWJ + rsAstralRange + rsComboMarksRange + rsComboSymbolsRange + rsVarRange + "]"), reBasicWord = /[a-zA-Z0-9]+/g, reComplexWord = RegExp([ rsUpper + "?" + rsLower + "+(?=" + [ rsBreak, rsUpper, "$" ].join("|") + ")", rsUpperMisc + "+(?=" + [ rsBreak, rsUpper + rsLowerMisc, "$" ].join("|") + ")", rsUpper + "?" + rsLowerMisc + "+", rsUpper + "+", rsDigits, rsEmoji ].join("|"), "g"), reHasComplexWord = /[a-z][A-Z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/, contextProps = [ "Array", "Buffer", "Date", "Error", "Float32Array", "Float64Array", "Function", "Int8Array", "Int16Array", "Int32Array", "Map", "Math", "Object", "Reflect", "RegExp", "Set", "String", "Symbol", "TypeError", "Uint8Array", "Uint8ClampedArray", "Uint16Array", "Uint32Array", "WeakMap", "_", "clearTimeout", "isFinite", "parseInt", "setTimeout" ], templateCounter = -1, typedArrayTags = {};
                 typedArrayTags[float32Tag] = typedArrayTags[float64Tag] = typedArrayTags[int8Tag] = typedArrayTags[int16Tag] = typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] = typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] = typedArrayTags[uint32Tag] = !0, 
                 typedArrayTags[argsTag] = typedArrayTags[arrayTag] = typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] = typedArrayTags[dateTag] = typedArrayTags[errorTag] = typedArrayTags[funcTag] = typedArrayTags[mapTag] = typedArrayTags[numberTag] = typedArrayTags[objectTag] = typedArrayTags[regexpTag] = typedArrayTags[setTag] = typedArrayTags[stringTag] = typedArrayTags[weakMapTag] = !1;
                 /** Used to identify `toStringTag` values supported by `_.clone`. */
@@ -13879,6 +13908,11 @@
                 return _classCallCheck(this, Thread), _possibleConstructorReturn(this, Object.getPrototypeOf(Thread).call(this, client, "thread", id));
             }
             return _inherits(Thread, _Resource), _createClass(Thread, [ {
+                key: "messages",
+                value: function() {
+                    return this.fetchJSON(this.path + "/messages");
+                }
+            }, {
                 key: "sendMessage",
                 value: function(msg) {
                     var payload = msg;
@@ -14370,7 +14404,7 @@
                         throw new Error("polyfill failed because global object is unavailable in this environment");
                     }
                     var P = local.Promise;
-                    (!P || "[object Promise]" !== Object.prototype.toString.call(P.resolve()) || P.cast) && (local.Promise = lib$es6$promise$promise$$default);
+                    P && "[object Promise]" === Object.prototype.toString.call(P.resolve()) && !P.cast || (local.Promise = lib$es6$promise$promise$$default);
                 }
                 var lib$es6$promise$utils$$_isArray;
                 lib$es6$promise$utils$$_isArray = Array.isArray ? Array.isArray : function(x) {
@@ -15762,7 +15796,7 @@
                 /** Detect free variables */
                 var freeGlobal = ("object" == typeof exports && exports && !exports.nodeType && exports, 
                 "object" == typeof module && module && !module.nodeType && module, "object" == typeof global && global);
-                (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal || freeGlobal.self === freeGlobal) && (root = freeGlobal);
+                freeGlobal.global !== freeGlobal && freeGlobal.window !== freeGlobal && freeGlobal.self !== freeGlobal || (root = freeGlobal);
                 /**
 		 * The `punycode` object.
 		 * @name punycode
@@ -15905,7 +15939,7 @@
                     this.method = input.method, this.mode = input.mode, body || (body = input._bodyInit, 
                     input.bodyUsed = !0);
                 } else this.url = input;
-                if (this.credentials = options.credentials || this.credentials || "omit", (options.headers || !this.headers) && (this.headers = new Headers(options.headers)), 
+                if (this.credentials = options.credentials || this.credentials || "omit", !options.headers && this.headers || (this.headers = new Headers(options.headers)), 
                 this.method = normalizeMethod(options.method || this.method || "GET"), this.mode = options.mode || this.mode || null, 
                 this.referrer = null, ("GET" === this.method || "HEAD" === this.method) && body) throw new TypeError("Body not allowed for GET or HEAD requests");
                 this._initBody(body);
