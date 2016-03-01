@@ -51,6 +51,6 @@
     "react": "^0.14.7",
     "webpack": "^1.12.14",
     "webpack-dev-middleware": "^1.5.1",
-    "webpack-hot-middleware": "^2.8.1"
+    "webpack-hot-middleware": "^2.9.0"
   }
 }
