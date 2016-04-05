@@ -28,7 +28,7 @@
     "lodash": "^4.8.2",
     "pluralize": "^1.2.1",
     "query-string": "^4.1.0",
-    "url-join": "1.0.0"
+    "url-join": "1.1.0"
   },
   "devDependencies": {
     "babel-core": "^6.7.4",
