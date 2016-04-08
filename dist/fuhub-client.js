@@ -92,7 +92,7 @@
             value: !0
         }), exports.setToken = exports.getToken = exports.Client = exports.API = exports.mimeType = exports.EventStream = void 0, 
         exports.initSession = initSession, exports.isLoggedIn = isLoggedIn;
-        var _lodash = __webpack_require__(9), _lodash2 = _interopRequireDefault(_lodash), _client = __webpack_require__(28), _client2 = _interopRequireDefault(_client), _store = __webpack_require__(11), _eventstream = __webpack_require__(31), _eventstream2 = _interopRequireDefault(_eventstream), _mimeType2 = __webpack_require__(10), _mimeType3 = _interopRequireDefault(_mimeType2);
+        var _lodash = __webpack_require__(10), _lodash2 = _interopRequireDefault(_lodash), _client = __webpack_require__(28), _client2 = _interopRequireDefault(_client), _store = __webpack_require__(11), _eventstream = __webpack_require__(31), _eventstream2 = _interopRequireDefault(_eventstream), _mimeType2 = __webpack_require__(8), _mimeType3 = _interopRequireDefault(_mimeType2);
         exports.EventStream = _eventstream2["default"], exports.mimeType = _mimeType3["default"];
         exports.API = new _client2["default"]();
         exports.Client = _client2["default"], exports.getToken = _store.getToken, exports.setToken = _store.setToken, 
@@ -1170,7 +1170,7 @@
         // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
         // USE OR OTHER DEALINGS IN THE SOFTWARE.
         module.exports = Stream;
-        var EE = __webpack_require__(8).EventEmitter, inherits = __webpack_require__(1);
+        var EE = __webpack_require__(9).EventEmitter, inherits = __webpack_require__(1);
         inherits(Stream, EE), Stream.Readable = __webpack_require__(55), Stream.Writable = __webpack_require__(57), 
         Stream.Duplex = __webpack_require__(53), Stream.Transform = __webpack_require__(56), 
         Stream.PassThrough = __webpack_require__(54), // Backwards-compat with node 0.4.x
@@ -1209,6 +1209,18 @@
             dest;
         };
     }, /* 8 */
+    /***/
+    function(module, exports) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        });
+        var mimeType = exports.mimeType = {
+            json: "application/json",
+            markdown: "text/markdown"
+        };
+        exports["default"] = mimeType;
+    }, /* 9 */
     /***/
     function(module, exports) {
         // Copyright Joyent, Inc. and other Node contributors.
@@ -1349,7 +1361,7 @@
         }, EventEmitter.listenerCount = function(emitter, type) {
             return emitter.listenerCount(type);
         };
-    }, /* 9 */
+    }, /* 10 */
     /***/
     function(module, exports, __webpack_require__) {
         var __WEBPACK_AMD_DEFINE_RESULT__;
@@ -12095,18 +12107,6 @@
         }).call(exports, __webpack_require__(14)(module), function() {
             return this;
         }());
-    }, /* 10 */
-    /***/
-    function(module, exports) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", {
-            value: !0
-        });
-        var mimeType = exports.mimeType = {
-            json: "application/json",
-            markdown: "text/markdown"
-        };
-        exports["default"] = mimeType;
     }, /* 11 */
     /***/
     function(module, exports) {
@@ -12729,7 +12729,7 @@
     }, /* 17 */
     /***/
     function(module, exports, __webpack_require__) {
-        var http = module.exports, Request = (__webpack_require__(8).EventEmitter, __webpack_require__(38)), url = __webpack_require__(23);
+        var http = module.exports, Request = (__webpack_require__(9).EventEmitter, __webpack_require__(38)), url = __webpack_require__(23);
         http.request = function(params, cb) {
             "string" == typeof params && (params = url.parse(params)), params || (params = {}), 
             params.host || params.port || (params.port = parseInt(window.location.port, 10)), 
@@ -13086,7 +13086,7 @@
             var isArray = __webpack_require__(52), Buffer = __webpack_require__(4).Buffer;
             /*</replacement>*/
             Readable.ReadableState = ReadableState;
-            var EE = __webpack_require__(8).EventEmitter;
+            var EE = __webpack_require__(9).EventEmitter;
             /*<replacement>*/
             EE.listenerCount || (EE.listenerCount = function(emitter, type) {
                 return emitter.listeners(type).length;
@@ -14457,7 +14457,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _clientbase = __webpack_require__(29), _clientbase2 = _interopRequireDefault(_clientbase), _resource = __webpack_require__(3), _resource2 = _interopRequireDefault(_resource), _user = __webpack_require__(34), _channel = __webpack_require__(27), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(33), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(32), _message2 = _interopRequireDefault(_message), _document = __webpack_require__(30), _document2 = _interopRequireDefault(_document), _collection = __webpack_require__(15), _collection2 = _interopRequireDefault(_collection), _pluralize = __webpack_require__(45), _pluralize2 = _interopRequireDefault(_pluralize), _store = __webpack_require__(11), _lodash = __webpack_require__(9), _lodash2 = _interopRequireDefault(_lodash), defaultOptions = {
+        }(), _clientbase = __webpack_require__(29), _clientbase2 = _interopRequireDefault(_clientbase), _resource = __webpack_require__(3), _resource2 = _interopRequireDefault(_resource), _user = __webpack_require__(34), _channel = __webpack_require__(27), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(33), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(32), _message2 = _interopRequireDefault(_message), _document = __webpack_require__(30), _document2 = _interopRequireDefault(_document), _collection = __webpack_require__(15), _collection2 = _interopRequireDefault(_collection), _pluralize = __webpack_require__(45), _pluralize2 = _interopRequireDefault(_pluralize), _store = __webpack_require__(11), _lodash = __webpack_require__(10), _lodash2 = _interopRequireDefault(_lodash), defaultOptions = {
             endpoint: "",
             token: ""
         }, Client = function(_ClientBase) {
@@ -14572,7 +14572,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _isomorphicFetch = __webpack_require__(43), _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch), _eventemitter = __webpack_require__(16), _eventemitter2 = _interopRequireDefault(_eventemitter), _mimeType = __webpack_require__(10), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(21), _urlJoin2 = _interopRequireDefault(_urlJoin), _auth = __webpack_require__(26), _store = __webpack_require__(11), _lodash = __webpack_require__(9), _lodash2 = _interopRequireDefault(_lodash);
+        }(), _isomorphicFetch = __webpack_require__(43), _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch), _eventemitter = __webpack_require__(16), _eventemitter2 = _interopRequireDefault(_eventemitter), _mimeType = __webpack_require__(8), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(21), _urlJoin2 = _interopRequireDefault(_urlJoin), _auth = __webpack_require__(26), _store = __webpack_require__(11), _lodash = __webpack_require__(10), _lodash2 = _interopRequireDefault(_lodash);
         __webpack_require__(36).polyfill();
         var ClientBase = function(_EventEmitter) {
             function ClientBase(options) {
@@ -14709,7 +14709,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _resource = __webpack_require__(3), _resource2 = _interopRequireDefault(_resource), Document = function(_Resource) {
+        }(), _resource = __webpack_require__(3), _resource2 = _interopRequireDefault(_resource), _mimeType = __webpack_require__(8), _mimeType2 = _interopRequireDefault(_mimeType), Document = function(_Resource) {
             function Document(client, id) {
                 return _classCallCheck(this, Document), _possibleConstructorReturn(this, Object.getPrototypeOf(Document).call(this, client, "document", id));
             }
@@ -14723,12 +14723,25 @@
                 value: function() {
                     var opts = {
                         headers: {
-                            // TODO markdown
-                            Accept: "text/plain"
+                            Accept: _mimeType2["default"].markdown
                         }
                     };
                     return this.client.fetch(this.path + "/content", opts).then(function(r) {
                         return r.text();
+                    });
+                }
+            }, {
+                key: "updateContent",
+                value: function(text) {
+                    var contentType = arguments.length <= 1 || void 0 === arguments[1] ? _mimeType2["default"].markdown : arguments[1], opts = {
+                        method: "put",
+                        headers: {
+                            "Content-Type": contentType || _mimeType2["default"].markdown
+                        },
+                        body: text
+                    };
+                    this.client.fetch(this.path + "/content", opts).then(function(r) {
+                        return r.json();
                     });
                 }
             } ]), Document;
@@ -14776,7 +14789,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _eventemitter = __webpack_require__(16), _eventemitter2 = _interopRequireDefault(_eventemitter), _eventsource = __webpack_require__(37), _eventsource2 = _interopRequireDefault(_eventsource), _urlJoin = __webpack_require__(21), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(46), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(9), _lodash2 = _interopRequireDefault(_lodash), EventStream = function(_EventEmitter) {
+        }(), _eventemitter = __webpack_require__(16), _eventemitter2 = _interopRequireDefault(_eventemitter), _eventsource = __webpack_require__(37), _eventsource2 = _interopRequireDefault(_eventsource), _urlJoin = __webpack_require__(21), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(46), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(10), _lodash2 = _interopRequireDefault(_lodash), EventStream = function(_EventEmitter) {
             function EventStream(options) {
                 _classCallCheck(this, EventStream);
                 var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventStream).call(this));
@@ -14892,7 +14905,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _resource = __webpack_require__(3), _resource2 = _interopRequireDefault(_resource), _mimeType = __webpack_require__(10), _mimeType2 = _interopRequireDefault(_mimeType), Thread = function(_Resource) {
+        }(), _resource = __webpack_require__(3), _resource2 = _interopRequireDefault(_resource), _mimeType = __webpack_require__(8), _mimeType2 = _interopRequireDefault(_mimeType), Thread = function(_Resource) {
             function Thread(client, id) {
                 return _classCallCheck(this, Thread), _possibleConstructorReturn(this, Object.getPrototypeOf(Thread).call(this, client, "thread", id));
             }
@@ -15824,7 +15837,7 @@
                     enumerable: !0
                 });
             }
-            var original = __webpack_require__(44), parse = __webpack_require__(23).parse, events = __webpack_require__(8), https = __webpack_require__(40), http = __webpack_require__(17), util = __webpack_require__(24);
+            var original = __webpack_require__(44), parse = __webpack_require__(23).parse, events = __webpack_require__(9), https = __webpack_require__(40), http = __webpack_require__(17), util = __webpack_require__(24);
             module.exports = EventSource, util.inherits(EventSource, events.EventEmitter), EventSource.prototype.constructor = EventSource, 
             // make stacktraces readable
             [ "open", "error", "message" ].forEach(function(method) {

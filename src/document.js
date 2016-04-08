@@ -1,4 +1,5 @@
 import Resource from './resource';
+import mimeType from './mimeType';
 
 export default class Document extends Resource {
 	constructor(client, id) {
@@ -12,12 +13,20 @@ export default class Document extends Resource {
 	content() {
 		const opts = {
 			headers: {
-				// TODO markdown
-				Accept: 'text/plain',
+				Accept: mimeType.markdown,
 			},
 		};
 		return this.client.fetch(`${this.path}/content`, opts).then(r => r.text());
 	}
 
-	// TODO updateContent
+	updateContent(text, contentType = mimeType.markdown) {
+		const opts = {
+			method: 'put',
+			headers: {
+				'Content-Type': contentType || mimeType.markdown,
+			},
+			body: text,
+		};
+		this.client.fetch(`${this.path}/content`, opts).then(r => r.json());
+	}
 }
