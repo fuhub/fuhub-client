@@ -1,7 +1,5 @@
 import Resource from './resource';
-
-// TODO move to common module
-export const defaultFormat = 'text/markdown';
+import mimeType from './mimeType';
 
 export default class Thread extends Resource {
 	constructor(client, id) {
@@ -17,7 +15,7 @@ export default class Thread extends Resource {
 		if (typeof msg === 'string') {
 			payload = {
 				body: msg,
-				format: defaultFormat,
+				format: mimeType.markdown,
 			};
 		}
 		return this.client.postJSON(this.path, payload);

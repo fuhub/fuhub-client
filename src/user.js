@@ -8,12 +8,8 @@ export class User extends Resource {
 }
 
 export class UserCollection extends Collection {
-	constructor(client, name) {
-		super(client, name);
-	}
-
 	me() {
-		return this.client.fetchJSON(`/api/user`);
+		return this.client.fetchJSON('/api/user');
 	}
 
 	current() {

@@ -1,7 +1,9 @@
-import Client from './client';
-import EventStream from './eventstream';
-import { getToken, setToken } from './store';
 import _ from 'lodash';
+import Client from './client';
+import { getToken, setToken } from './store';
+
+export EventStream from './eventstream';
+export mimeType from './mimeType';
 
 export function initSession(init, showLogin) {
 	const client = new Client();
@@ -25,7 +27,6 @@ export const API = new Client();
 
 export {
 	Client,
-	EventStream,
 	getToken,
 	setToken,
 };
