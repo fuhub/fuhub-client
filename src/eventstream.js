@@ -1,17 +1,26 @@
 import EventEmitter from 'eventemitter3';
 import EventSource from 'eventsource';
-// TODO remove dependency on callback-queue
-// import callbackQueue from 'callback-queue';
 import urljoin from 'url-join';
 import queryString from 'query-string';
 import _ from 'lodash';
 
-// TODO idea: use generators to ensure hronological order of events
+const nextTick = (function () {
+	if (typeof process === 'object' && typeof process.nextTick === 'function') {
+		return process.nextTick;
+	}
+	if (typeof setImmediate === 'function') {
+		return setImmediate;
+	}
+	return cb => setTimeout(cb, 0);
+}());
 
 // Event stream from global channel or specific channels.
 export default class EventStream extends EventEmitter {
 	constructor(options) {
 		super();
+
+		this._queue = [];
+		this._processing = false;
 
 		if (options && options.url && options.token) {
 			this.open(options);
@@ -24,27 +33,25 @@ export default class EventStream extends EventEmitter {
 		const params = queryString.stringify({ auth_token: options.token });
 		const url = urljoin(options.url, `?${params}`);
 		const source = new EventSource(url);
-		const self = this;
 
 		this.source = source;
 
-		source.onerror = (err) => {
+		source.onerror = err => {
 			console.log('SSE error:', err);
-			self.emit('error', err);
+			this.emit('error', err);
 		};
 
-		source.onmessage = (e) => {
+		source.onmessage = e => {
 			const msg = _.isString(e.data) ? JSON.parse(e.data) : e.data;
 			console.log('SSE message:', msg);
-			self.handleEvent(msg);
+			this.handleEvent(msg);
 		};
 	}
 
 	close() {
-		const source = this.source;
-		this.source = null;
-		if (source) {
-			source.close();
+		if (this.source) {
+			this.source.close();
+			this.source = null;
 		}
 	}
 
@@ -57,12 +64,29 @@ export default class EventStream extends EventEmitter {
 		if (action === 'delete') {
 			data = id;
 		}
-		const self = this;
-		self.emit(eventType, data);
-		// TODO deal with order of events to avoid async side-effects in application
-		// const cb = callbackQueue.add(e.id, () => {
-		// 	self.emit(eventType, data);
-		// });
-		// cb();
+		this._push(eventType, data);
+	}
+
+	_push(eventType, data) {
+		this._queue.push(() => this.emit(eventType, data));
+		if (this._processing) return;
+		this._processing = true;
+		this._loop();
+	}
+
+	_loop() {
+		const fn = this._queue.shift();
+		nextTick(() => {
+			try {
+				fn();
+			} catch (err) {
+				console.log(err);
+			}
+			if (this._queue.length > 0) {
+				this._loop();
+			} else {
+				this._processing = false;
+			}
+		});
 	}
 }
