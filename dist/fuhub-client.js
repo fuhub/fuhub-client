@@ -14519,7 +14519,9 @@
             }, {
                 key: "login",
                 value: function(payload) {
-                    return this.postJSON("/api/login", payload).then(function(token) {
+                    return this.postJSON("/api/login", payload, {
+                        noauth: !0
+                    }).then(function(token) {
                         return (0, _store.setToken)(token), token;
                     });
                 }
@@ -14647,10 +14649,8 @@
                 value: function(path) {
                     var _this2 = this, options = arguments.length <= 1 || void 0 === arguments[1] ? {} : arguments[1];
                     _lodash2["default"].isObject(options.body) && (options.body = JSON.stringify(options.body));
-                    var method = (options.method || "get").toLowerCase(), auth = this.makeAuth(), headers = _extends({}, options.headers || {}, {
-                        Authorization: auth
-                    });
-                    options.hasOwnProperty("body") && (headers["Content-Type"] = _mimeType2["default"].json);
+                    var method = (options.method || "get").toLowerCase(), auth = options.noauth ? "" : this.makeAuth(), headers = _extends({}, options.headers || {});
+                    auth && (headers.Authorization = auth), options.hasOwnProperty("body") && (headers["Content-Type"] = _mimeType2["default"].json);
                     var opts = _extends({}, options, {
                         headers: headers
                     }), onSuccess = function(response) {

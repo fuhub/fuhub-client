@@ -40,11 +40,11 @@ export default class ClientBase extends EventEmitter {
 			options.body = JSON.stringify(options.body); // eslint-disable-line
 		}
 		const method = (options.method || 'get').toLowerCase();
-		const auth = this.makeAuth();
-		const headers = {
-			...(options.headers || {}),
-			Authorization: auth,
-		};
+		const auth = options.noauth ? '' : this.makeAuth();
+		const headers = { ...(options.headers || {}) };
+		if (auth) {
+			headers.Authorization = auth;
+		}
 		if (options.hasOwnProperty('body')) {
 			headers['Content-Type'] = mimeType.json;
 		}
