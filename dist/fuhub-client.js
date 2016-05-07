@@ -15027,8 +15027,8 @@
             }
             return _inherits(User, _Resource), User;
         }(_resource2["default"]), exports.UserCollection = function(_Collection) {
-            function UserCollection() {
-                return _classCallCheck(this, UserCollection), _possibleConstructorReturn(this, Object.getPrototypeOf(UserCollection).apply(this, arguments));
+            function UserCollection(client) {
+                return _classCallCheck(this, UserCollection), _possibleConstructorReturn(this, Object.getPrototypeOf(UserCollection).call(this, client, "users"));
             }
             return _inherits(UserCollection, _Collection), _createClass(UserCollection, [ {
                 key: "me",
