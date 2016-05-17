@@ -1,8 +1,10 @@
+/* eslint-disable no-underscore-dangle */
 import EventEmitter from 'eventemitter3';
 import EventSource from 'eventsource';
 import urljoin from 'url-join';
 import queryString from 'query-string';
 import _ from 'lodash';
+import { getToken } from './store';
 
 const nextTick = (function () {
 	if (typeof process === 'object' && typeof process.nextTick === 'function') {
@@ -14,15 +16,22 @@ const nextTick = (function () {
 	return cb => setTimeout(cb, 0);
 }());
 
+const defaultOptions = {
+	url: '/api/event/stream',
+	token: '',
+};
+
+// TODO auto-reconnect when token is changed
+
 // Event stream from global channel or specific channels.
 export default class EventStream extends EventEmitter {
-	constructor(options) {
+	constructor(options = defaultOptions) {
 		super();
 
 		this._queue = [];
 		this._processing = false;
 
-		if (options && options.url && options.token) {
+		if (options && options.url) {
 			this.open(options);
 		}
 	}
@@ -30,7 +39,8 @@ export default class EventStream extends EventEmitter {
 	open(options) {
 		this.close();
 
-		const params = queryString.stringify({ auth_token: options.token });
+		const token = options.token || getToken();
+		const params = queryString.stringify({ auth_token: token });
 		const url = urljoin(options.url, `?${params}`);
 		const source = new EventSource(url);
 
@@ -59,8 +69,8 @@ export default class EventStream extends EventEmitter {
 		const action = (e.action || '').toLowerCase();
 		const id = e.resource_id;
 		let data = e.body;
-		const type = (e.type || '').toUpperCase();
-		const eventType = `${action.toUpperCase()}_${type}`;
+		const type = (e.type || '').toLowerCase();
+		const eventType = `${type}.${action}`;
 		if (action === 'delete') {
 			data = id;
 		}

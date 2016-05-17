@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import Client from './client';
 import { getToken, setToken } from './store';
-
-export EventStream from './eventstream';
+import EventStream from './eventstream';
 export mimeType from './mimeType';
 
 export function initSession(init, showLogin) {
@@ -24,8 +23,11 @@ export function isLoggedIn() {
 }
 
 export const API = new Client();
+export const SSE = new EventStream();
+export const ServerEvents = SSE;
 
 export {
+	EventStream,
 	Client,
 	getToken,
 	setToken,
