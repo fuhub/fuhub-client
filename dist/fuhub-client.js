@@ -90,14 +90,28 @@
         }
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.setToken = exports.getToken = exports.Client = exports.EventStream = exports.ServerEvents = exports.SSE = exports.API = exports.mimeType = void 0, 
-        exports.initSession = initSession, exports.isLoggedIn = isLoggedIn;
-        var _lodash = __webpack_require__(11), _lodash2 = _interopRequireDefault(_lodash), _client = __webpack_require__(29), _client2 = _interopRequireDefault(_client), _store = __webpack_require__(9), _eventstream = __webpack_require__(32), _eventstream2 = _interopRequireDefault(_eventstream), _mimeType2 = __webpack_require__(8), _mimeType3 = _interopRequireDefault(_mimeType2);
-        exports.mimeType = _mimeType3["default"];
-        var SSE = (exports.API = new _client2["default"](), exports.SSE = new _eventstream2["default"]());
-        exports.ServerEvents = SSE;
-        exports.EventStream = _eventstream2["default"], exports.Client = _client2["default"], 
-        exports.getToken = _store.getToken, exports.setToken = _store.setToken, exports["default"] = _client2["default"];
+        }), exports.reduxCollection = exports.setToken = exports.getToken = exports.Client = exports.EventStream = exports.SSE = exports.ServerEvents = exports.API = exports.mimeType = void 0;
+        var _global = __webpack_require__(19);
+        Object.defineProperty(exports, "API", {
+            enumerable: !0,
+            get: function() {
+                return _global.API;
+            }
+        }), Object.defineProperty(exports, "ServerEvents", {
+            enumerable: !0,
+            get: function() {
+                return _global.ServerEvents;
+            }
+        }), Object.defineProperty(exports, "SSE", {
+            enumerable: !0,
+            get: function() {
+                return _global.SSE;
+            }
+        }), exports.initSession = initSession, exports.isLoggedIn = isLoggedIn;
+        var _lodash = __webpack_require__(11), _lodash2 = _interopRequireDefault(_lodash), _client = __webpack_require__(16), _client2 = _interopRequireDefault(_client), _store = __webpack_require__(9), _eventstream = __webpack_require__(18), _eventstream2 = _interopRequireDefault(_eventstream), _mimeType2 = __webpack_require__(8), _mimeType3 = _interopRequireDefault(_mimeType2), _redux = __webpack_require__(35), _redux2 = _interopRequireDefault(_redux);
+        exports.mimeType = _mimeType3["default"], exports.EventStream = _eventstream2["default"], 
+        exports.Client = _client2["default"], exports.getToken = _store.getToken, exports.setToken = _store.setToken, 
+        exports.reduxCollection = _redux2["default"], exports["default"] = _client2["default"];
     }, /* 1 */
     /***/
     function(module, exports) {
@@ -214,7 +228,7 @@
             }, util = __webpack_require__(7);
             util.inherits = __webpack_require__(1);
             /*</replacement>*/
-            var Readable = __webpack_require__(20), Writable = __webpack_require__(13);
+            var Readable = __webpack_require__(23), Writable = __webpack_require__(13);
             util.inherits(Duplex, Readable), forEach(objectKeys(Writable.prototype), function(method) {
                 Duplex.prototype[method] || (Duplex.prototype[method] = Writable.prototype[method]);
             });
@@ -619,7 +633,7 @@
                 for (var i = 0; length > i && !(i + offset >= dst.length || i >= src.length); i++) dst[i + offset] = src[i];
                 return i;
             }
-            var base64 = __webpack_require__(36), ieee754 = __webpack_require__(42), isArray = __webpack_require__(43);
+            var base64 = __webpack_require__(38), ieee754 = __webpack_require__(44), isArray = __webpack_require__(45);
             exports.Buffer = Buffer, exports.SlowBuffer = SlowBuffer, exports.INSPECT_MAX_BYTES = 50, 
             Buffer.poolSize = 8192;
             // not used by this implementation
@@ -1018,9 +1032,9 @@
         // USE OR OTHER DEALINGS IN THE SOFTWARE.
         module.exports = Stream;
         var EE = __webpack_require__(10).EventEmitter, inherits = __webpack_require__(1);
-        inherits(Stream, EE), Stream.Readable = __webpack_require__(55), Stream.Writable = __webpack_require__(57), 
-        Stream.Duplex = __webpack_require__(53), Stream.Transform = __webpack_require__(56), 
-        Stream.PassThrough = __webpack_require__(54), // Backwards-compat with node 0.4.x
+        inherits(Stream, EE), Stream.Readable = __webpack_require__(57), Stream.Writable = __webpack_require__(59), 
+        Stream.Duplex = __webpack_require__(55), Stream.Transform = __webpack_require__(58), 
+        Stream.PassThrough = __webpack_require__(56), // Backwards-compat with node 0.4.x
         Stream.Stream = Stream, Stream.prototype.pipe = function(dest, options) {
             function ondata(chunk) {
                 dest.writable && !1 === dest.write(chunk) && source.pause && source.pause();
@@ -12573,7 +12587,7 @@
             function Timeout(id, clearFn) {
                 this._id = id, this._clearFn = clearFn;
             }
-            var nextTick = __webpack_require__(59).nextTick, apply = Function.prototype.apply, slice = Array.prototype.slice, immediateIds = {}, nextImmediateId = 0;
+            var nextTick = __webpack_require__(61).nextTick, apply = Function.prototype.apply, slice = Array.prototype.slice, immediateIds = {}, nextImmediateId = 0;
             // DOM APIs, for completeness
             exports.setTimeout = function() {
                 return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
@@ -12616,6 +12630,117 @@
             module.children = [], module.webpackPolyfill = 1), module;
         };
     }, /* 16 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        "use strict";
+        function _interopRequireDefault(obj) {
+            return obj && obj.__esModule ? obj : {
+                "default": obj
+            };
+        }
+        function _classCallCheck(instance, Constructor) {
+            if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+        }
+        function _possibleConstructorReturn(self, call) {
+            if (!self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+            return !call || "object" != typeof call && "function" != typeof call ? self : call;
+        }
+        function _inherits(subClass, superClass) {
+            if ("function" != typeof superClass && null !== superClass) throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+            subClass.prototype = Object.create(superClass && superClass.prototype, {
+                constructor: {
+                    value: subClass,
+                    enumerable: !1,
+                    writable: !0,
+                    configurable: !0
+                }
+            }), superClass && (Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass);
+        }
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        });
+        var _createClass = function() {
+            function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                    var descriptor = props[i];
+                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                    "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+                }
+            }
+            return function(Constructor, protoProps, staticProps) {
+                return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
+                Constructor;
+            };
+        }(), _clientbase = __webpack_require__(32), _clientbase2 = _interopRequireDefault(_clientbase), _user = __webpack_require__(37), _channel = __webpack_require__(31), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(36), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(34), _message2 = _interopRequireDefault(_message), _document = __webpack_require__(33), _document2 = _interopRequireDefault(_document), _collection = __webpack_require__(17), _collection2 = _interopRequireDefault(_collection), _store = __webpack_require__(9), defaultOptions = {
+            endpoint: "",
+            token: ""
+        }, Client = function(_ClientBase) {
+            function Client() {
+                var options = arguments.length <= 0 || void 0 === arguments[0] ? defaultOptions : arguments[0];
+                _classCallCheck(this, Client);
+                var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Client).call(this, options));
+                return _this.users = new _user.UserCollection(_this), _this.channels = new _collection2["default"](_this, "channels"), 
+                _this.threads = new _collection2["default"](_this, "threads"), _this.messages = new _collection2["default"](_this, "messages"), 
+                _this.documents = new _collection2["default"](_this, "documents"), _this;
+            }
+            return _inherits(Client, _ClientBase), _createClass(Client, [ {
+                key: "token",
+                value: function() {
+                    return this.fetchJSON("/api/token");
+                }
+            }, {
+                key: "login",
+                value: function(payload) {
+                    return this.postJSON("/api/login", payload, {
+                        noauth: !0
+                    }).then(function(token) {
+                        return (0, _store.setToken)(token), token;
+                    });
+                }
+            }, {
+                key: "logout",
+                value: function() {
+                    return this.postJSON("/api/logout", {});
+                }
+            }, {
+                key: "me",
+                value: function() {
+                    return this.fetchJSON("/api/user");
+                }
+            }, {
+                key: "currentUser",
+                value: function() {
+                    return this.me();
+                }
+            }, {
+                key: "user",
+                value: function(id) {
+                    return new _user.User(this, id);
+                }
+            }, {
+                key: "channel",
+                value: function(id) {
+                    return new _channel2["default"](this, id);
+                }
+            }, {
+                key: "thread",
+                value: function(id) {
+                    return new _thread2["default"](this, id);
+                }
+            }, {
+                key: "message",
+                value: function(id) {
+                    return new _message2["default"](this, id);
+                }
+            }, {
+                key: "document",
+                value: function(id) {
+                    return new _document2["default"](this, id);
+                }
+            } ]), Client;
+        }(_clientbase2["default"]);
+        exports["default"] = Client;
+    }, /* 17 */
     /***/
     function(module, exports) {
         "use strict";
@@ -12664,7 +12789,136 @@
             } ]), Collection;
         }();
         exports["default"] = Collection;
-    }, /* 17 */
+    }, /* 18 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        /* WEBPACK VAR INJECTION */
+        (function(process, setImmediate) {
+            "use strict";
+            function _interopRequireDefault(obj) {
+                return obj && obj.__esModule ? obj : {
+                    "default": obj
+                };
+            }
+            function _classCallCheck(instance, Constructor) {
+                if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+            }
+            function _possibleConstructorReturn(self, call) {
+                if (!self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+                return !call || "object" != typeof call && "function" != typeof call ? self : call;
+            }
+            function _inherits(subClass, superClass) {
+                if ("function" != typeof superClass && null !== superClass) throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+                subClass.prototype = Object.create(superClass && superClass.prototype, {
+                    constructor: {
+                        value: subClass,
+                        enumerable: !1,
+                        writable: !0,
+                        configurable: !0
+                    }
+                }), superClass && (Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass);
+            }
+            Object.defineProperty(exports, "__esModule", {
+                value: !0
+            });
+            var _createClass = function() {
+                function defineProperties(target, props) {
+                    for (var i = 0; i < props.length; i++) {
+                        var descriptor = props[i];
+                        descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                        "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+                    }
+                }
+                return function(Constructor, protoProps, staticProps) {
+                    return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
+                    Constructor;
+                };
+            }(), _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+                return typeof obj;
+            } : function(obj) {
+                return obj && "function" == typeof Symbol && obj.constructor === Symbol ? "symbol" : typeof obj;
+            }, _eventemitter = __webpack_require__(20), _eventemitter2 = _interopRequireDefault(_eventemitter), _eventsource = __webpack_require__(40), _eventsource2 = _interopRequireDefault(_eventsource), _urlJoin = __webpack_require__(25), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(48), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(11), _lodash2 = _interopRequireDefault(_lodash), _store = __webpack_require__(9), nextTick = function() {
+                return "object" === ("undefined" == typeof process ? "undefined" : _typeof(process)) && "function" == typeof process.nextTick ? process.nextTick : "function" == typeof setImmediate ? setImmediate : function(cb) {
+                    return setTimeout(cb, 0);
+                };
+            }(), defaultOptions = {
+                url: "/api/event/stream",
+                token: ""
+            }, EventStream = function(_EventEmitter) {
+                function EventStream() {
+                    var options = arguments.length <= 0 || void 0 === arguments[0] ? defaultOptions : arguments[0];
+                    _classCallCheck(this, EventStream);
+                    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventStream).call(this));
+                    return _this._queue = [], _this._processing = !1, options && options.url && _this.open(options), 
+                    _this;
+                }
+                return _inherits(EventStream, _EventEmitter), _createClass(EventStream, [ {
+                    key: "open",
+                    value: function(options) {
+                        var _this2 = this;
+                        this.close();
+                        var token = options.token || (0, _store.getToken)(), params = _queryString2["default"].stringify({
+                            auth_token: token
+                        }), url = (0, _urlJoin2["default"])(options.url, "?" + params), source = new _eventsource2["default"](url);
+                        this.source = source, source.onerror = function(err) {
+                            console.log("SSE error:", err), _this2.emit("error", err);
+                        }, source.onmessage = function(e) {
+                            var msg = _lodash2["default"].isString(e.data) ? JSON.parse(e.data) : e.data;
+                            console.log("SSE message:", msg), _this2.handleEvent(msg);
+                        };
+                    }
+                }, {
+                    key: "close",
+                    value: function() {
+                        this.source && (this.source.close(), this.source = null);
+                    }
+                }, {
+                    key: "handleEvent",
+                    value: function(e) {
+                        var action = (e.action || "").toLowerCase(), id = e.resource_id, data = e.body, type = (e.type || "").toLowerCase(), eventType = type + "." + action;
+                        "delete" === action && (data = id), this._push(eventType, data);
+                    }
+                }, {
+                    key: "_push",
+                    value: function(eventType, data) {
+                        var _this3 = this;
+                        this._queue.push(function() {
+                            return _this3.emit(eventType, data);
+                        }), this._processing || (this._processing = !0, this._loop());
+                    }
+                }, {
+                    key: "_loop",
+                    value: function() {
+                        var _this4 = this, fn = this._queue.shift();
+                        nextTick(function() {
+                            try {
+                                fn();
+                            } catch (err) {
+                                console.log(err);
+                            }
+                            _this4._queue.length > 0 ? _this4._loop() : _this4._processing = !1;
+                        });
+                    }
+                } ]), EventStream;
+            }(_eventemitter2["default"]);
+            exports["default"] = EventStream;
+        }).call(exports, __webpack_require__(2), __webpack_require__(14).setImmediate);
+    }, /* 19 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        "use strict";
+        function _interopRequireDefault(obj) {
+            return obj && obj.__esModule ? obj : {
+                "default": obj
+            };
+        }
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        }), exports.ServerEvents = exports.SSE = exports.API = void 0;
+        var _client = __webpack_require__(16), _client2 = _interopRequireDefault(_client), _eventstream = __webpack_require__(18), _eventstream2 = _interopRequireDefault(_eventstream), SSE = (exports.API = new _client2["default"](), 
+        exports.SSE = new _eventstream2["default"]());
+        exports.ServerEvents = SSE;
+    }, /* 20 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -12842,10 +13096,10 @@
         // Expose the prefix.
         //
         EventEmitter.prefixed = prefix, module.exports = EventEmitter;
-    }, /* 18 */
+    }, /* 21 */
     /***/
     function(module, exports, __webpack_require__) {
-        var http = module.exports, Request = (__webpack_require__(10).EventEmitter, __webpack_require__(39)), url = __webpack_require__(24);
+        var http = module.exports, Request = (__webpack_require__(10).EventEmitter, __webpack_require__(41)), url = __webpack_require__(27);
         http.request = function(params, cb) {
             "string" == typeof params && (params = url.parse(params)), params || (params = {}), 
             params.host || params.port || (params.port = parseInt(window.location.port, 10)), 
@@ -12950,7 +13204,7 @@
             // RFC 2774
             511: "Network Authentication Required"
         };
-    }, /* 19 */
+    }, /* 22 */
     /***/
     function(module, exports, __webpack_require__) {
         function PassThrough(options) {
@@ -12985,7 +13239,7 @@
         util.inherits(PassThrough, Transform), PassThrough.prototype._transform = function(chunk, encoding, cb) {
             cb(null, chunk);
         };
-    }, /* 20 */
+    }, /* 23 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -13016,7 +13270,7 @@
                 // after read()ing all the bytes and not getting any pushback.
                 this.ranOut = !1, // the number of writers that are awaiting a drain event in .pipe()s
                 this.awaitDrain = 0, // if true, a maybeReadMore has been scheduled
-                this.readingMore = !1, this.decoder = null, this.encoding = null, options.encoding && (StringDecoder || (StringDecoder = __webpack_require__(21).StringDecoder), 
+                this.readingMore = !1, this.decoder = null, this.encoding = null, options.encoding && (StringDecoder || (StringDecoder = __webpack_require__(24).StringDecoder), 
                 this.decoder = new StringDecoder(options.encoding), this.encoding = options.encoding);
             }
             function Readable(options) {
@@ -13199,7 +13453,7 @@
             // USE OR OTHER DEALINGS IN THE SOFTWARE.
             module.exports = Readable;
             /*<replacement>*/
-            var isArray = __webpack_require__(52), Buffer = __webpack_require__(4).Buffer;
+            var isArray = __webpack_require__(54), Buffer = __webpack_require__(4).Buffer;
             /*</replacement>*/
             Readable.ReadableState = ReadableState;
             var EE = __webpack_require__(10).EventEmitter;
@@ -13211,7 +13465,7 @@
             var Stream = __webpack_require__(5), util = __webpack_require__(7);
             util.inherits = __webpack_require__(1);
             /*</replacement>*/
-            var StringDecoder, debug = __webpack_require__(66);
+            var StringDecoder, debug = __webpack_require__(68);
             debug = debug && debug.debuglog ? debug.debuglog("stream") : function() {}, util.inherits(Readable, Stream), 
             Readable.prototype.push = function(chunk, encoding) {
                 var state = this._readableState;
@@ -13222,7 +13476,7 @@
                 var state = this._readableState;
                 return readableAddChunk(this, state, chunk, "", !0);
             }, Readable.prototype.setEncoding = function(enc) {
-                return StringDecoder || (StringDecoder = __webpack_require__(21).StringDecoder), 
+                return StringDecoder || (StringDecoder = __webpack_require__(24).StringDecoder), 
                 this._readableState.decoder = new StringDecoder(enc), this._readableState.encoding = enc, 
                 this;
             };
@@ -13440,7 +13694,7 @@
             }, // exposed for testing purposes only.
             Readable._fromList = fromList;
         }).call(exports, __webpack_require__(2));
-    }, /* 21 */
+    }, /* 24 */
     /***/
     function(module, exports, __webpack_require__) {
         function assertEncoding(encoding) {
@@ -13602,7 +13856,7 @@
             }
             return res;
         };
-    }, /* 22 */
+    }, /* 25 */
     /***/
     function(module, exports, __webpack_require__) {
         var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
@@ -13626,7 +13880,7 @@
                 return normalize(joined, options);
             };
         });
-    }, /* 23 */
+    }, /* 26 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -13681,7 +13935,7 @@
             //
             url.href = url.toString();
         }
-        var required = __webpack_require__(51), lolcation = __webpack_require__(60), qs = __webpack_require__(50), relativere = /^\/(?!\/)/, instructions = [ [ "#", "hash" ], // Extract from the back.
+        var required = __webpack_require__(53), lolcation = __webpack_require__(62), qs = __webpack_require__(52), relativere = /^\/(?!\/)/, instructions = [ [ "#", "hash" ], // Extract from the back.
         [ "?", "query" ], // Extract from the back.
         [ "//", "protocol", 2, 1, 1 ], // Extract from the front.
         [ "/", "pathname" ], // Extract from the back.
@@ -13726,7 +13980,7 @@
         // others.
         //
         URL.qs = qs, URL.location = lolcation, module.exports = URL;
-    }, /* 24 */
+    }, /* 27 */
     /***/
     function(module, exports, __webpack_require__) {
         function Url() {
@@ -13785,7 +14039,7 @@
         // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
         // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
         // USE OR OTHER DEALINGS IN THE SOFTWARE.
-        var punycode = __webpack_require__(61);
+        var punycode = __webpack_require__(63);
         exports.parse = urlParse, exports.resolve = urlResolve, exports.resolveObject = urlResolveObject, 
         exports.format = urlFormat, exports.Url = Url;
         // Reference: RFC 3986, RFC 1808, RFC 2396
@@ -13819,7 +14073,7 @@
             "ftp:": !0,
             "gopher:": !0,
             "file:": !0
-        }, querystring = __webpack_require__(49);
+        }, querystring = __webpack_require__(51);
         Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
             if (!isString(url)) throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
             var rest = url;
@@ -14049,7 +14303,7 @@
             port && (port = port[0], ":" !== port && (this.port = port.substr(1)), host = host.substr(0, host.length - port.length)), 
             host && (this.hostname = host);
         };
-    }, /* 25 */
+    }, /* 28 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -14344,7 +14598,7 @@
             exports.isNullOrUndefined = isNullOrUndefined, exports.isNumber = isNumber, exports.isString = isString, 
             exports.isSymbol = isSymbol, exports.isUndefined = isUndefined, exports.isRegExp = isRegExp, 
             exports.isObject = isObject, exports.isDate = isDate, exports.isError = isError, 
-            exports.isFunction = isFunction, exports.isPrimitive = isPrimitive, exports.isBuffer = __webpack_require__(62);
+            exports.isFunction = isFunction, exports.isPrimitive = isPrimitive, exports.isBuffer = __webpack_require__(64);
             var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
             // log is just a thin wrapper to console.log that prepends a timestamp
             exports.log = function() {
@@ -14371,7 +14625,7 @@
         }).call(exports, function() {
             return this;
         }(), __webpack_require__(2));
-    }, /* 26 */
+    }, /* 29 */
     /***/
     function(module, exports, __webpack_require__) {
         !function() {
@@ -14405,7 +14659,7 @@
                 return output;
             });
         }();
-    }, /* 27 */
+    }, /* 30 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -14427,7 +14681,7 @@
                 return new Buffer(s).toString("base64");
             };
         }).call(exports, __webpack_require__(4).Buffer);
-    }, /* 28 */
+    }, /* 31 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -14481,118 +14735,7 @@
             } ]), Channel;
         }(_resource2["default"]);
         exports["default"] = Channel;
-    }, /* 29 */
-    /***/
-    function(module, exports, __webpack_require__) {
-        "use strict";
-        function _interopRequireDefault(obj) {
-            return obj && obj.__esModule ? obj : {
-                "default": obj
-            };
-        }
-        function _classCallCheck(instance, Constructor) {
-            if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-        }
-        function _possibleConstructorReturn(self, call) {
-            if (!self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-            return !call || "object" != typeof call && "function" != typeof call ? self : call;
-        }
-        function _inherits(subClass, superClass) {
-            if ("function" != typeof superClass && null !== superClass) throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-            subClass.prototype = Object.create(superClass && superClass.prototype, {
-                constructor: {
-                    value: subClass,
-                    enumerable: !1,
-                    writable: !0,
-                    configurable: !0
-                }
-            }), superClass && (Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass);
-        }
-        Object.defineProperty(exports, "__esModule", {
-            value: !0
-        });
-        var _createClass = function() {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
-                    "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-            return function(Constructor, protoProps, staticProps) {
-                return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
-                Constructor;
-            };
-        }(), _clientbase = __webpack_require__(30), _clientbase2 = _interopRequireDefault(_clientbase), _user = __webpack_require__(35), _channel = __webpack_require__(28), _channel2 = _interopRequireDefault(_channel), _thread = __webpack_require__(34), _thread2 = _interopRequireDefault(_thread), _message = __webpack_require__(33), _message2 = _interopRequireDefault(_message), _document = __webpack_require__(31), _document2 = _interopRequireDefault(_document), _collection = __webpack_require__(16), _collection2 = _interopRequireDefault(_collection), _store = __webpack_require__(9), defaultOptions = {
-            endpoint: "",
-            token: ""
-        }, Client = function(_ClientBase) {
-            function Client() {
-                var options = arguments.length <= 0 || void 0 === arguments[0] ? defaultOptions : arguments[0];
-                _classCallCheck(this, Client);
-                var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Client).call(this, options));
-                return _this.users = new _user.UserCollection(_this), _this.channels = new _collection2["default"](_this, "channels"), 
-                _this.threads = new _collection2["default"](_this, "threads"), _this.messages = new _collection2["default"](_this, "messages"), 
-                _this.documents = new _collection2["default"](_this, "documents"), _this;
-            }
-            return _inherits(Client, _ClientBase), _createClass(Client, [ {
-                key: "token",
-                value: function() {
-                    return this.fetchJSON("/api/token");
-                }
-            }, {
-                key: "login",
-                value: function(payload) {
-                    return this.postJSON("/api/login", payload, {
-                        noauth: !0
-                    }).then(function(token) {
-                        return (0, _store.setToken)(token), token;
-                    });
-                }
-            }, {
-                key: "logout",
-                value: function() {
-                    return this.postJSON("/api/logout", {});
-                }
-            }, {
-                key: "me",
-                value: function() {
-                    return this.fetchJSON("/api/user");
-                }
-            }, {
-                key: "currentUser",
-                value: function() {
-                    return this.me();
-                }
-            }, {
-                key: "user",
-                value: function(id) {
-                    return new _user.User(this, id);
-                }
-            }, {
-                key: "channel",
-                value: function(id) {
-                    return new _channel2["default"](this, id);
-                }
-            }, {
-                key: "thread",
-                value: function(id) {
-                    return new _thread2["default"](this, id);
-                }
-            }, {
-                key: "message",
-                value: function(id) {
-                    return new _message2["default"](this, id);
-                }
-            }, {
-                key: "document",
-                value: function(id) {
-                    return new _document2["default"](this, id);
-                }
-            } ]), Client;
-        }(_clientbase2["default"]);
-        exports["default"] = Client;
-    }, /* 30 */
+    }, /* 32 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -14640,8 +14783,8 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _isomorphicFetch = __webpack_require__(44), _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch), _eventemitter = __webpack_require__(17), _eventemitter2 = _interopRequireDefault(_eventemitter), _mimeType = __webpack_require__(8), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(22), _urlJoin2 = _interopRequireDefault(_urlJoin), _auth = __webpack_require__(27), _store = __webpack_require__(9), _lodash = __webpack_require__(11), _lodash2 = _interopRequireDefault(_lodash);
-        __webpack_require__(37).polyfill();
+        }(), _isomorphicFetch = __webpack_require__(46), _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch), _eventemitter = __webpack_require__(20), _eventemitter2 = _interopRequireDefault(_eventemitter), _mimeType = __webpack_require__(8), _mimeType2 = _interopRequireDefault(_mimeType), _urlJoin = __webpack_require__(25), _urlJoin2 = _interopRequireDefault(_urlJoin), _auth = __webpack_require__(30), _store = __webpack_require__(9), _lodash = __webpack_require__(11), _lodash2 = _interopRequireDefault(_lodash);
+        __webpack_require__(39).polyfill();
         var ClientBase = function(_EventEmitter) {
             function ClientBase(options) {
                 _classCallCheck(this, ClientBase);
@@ -14733,7 +14876,7 @@
             } ]), ClientBase;
         }(_eventemitter2["default"]);
         exports["default"] = ClientBase;
-    }, /* 31 */
+    }, /* 33 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -14813,121 +14956,7 @@
             } ]), Document;
         }(_resource2["default"]);
         exports["default"] = Document;
-    }, /* 32 */
-    /***/
-    function(module, exports, __webpack_require__) {
-        /* WEBPACK VAR INJECTION */
-        (function(process, setImmediate) {
-            "use strict";
-            function _interopRequireDefault(obj) {
-                return obj && obj.__esModule ? obj : {
-                    "default": obj
-                };
-            }
-            function _classCallCheck(instance, Constructor) {
-                if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }
-            function _possibleConstructorReturn(self, call) {
-                if (!self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-                return !call || "object" != typeof call && "function" != typeof call ? self : call;
-            }
-            function _inherits(subClass, superClass) {
-                if ("function" != typeof superClass && null !== superClass) throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-                subClass.prototype = Object.create(superClass && superClass.prototype, {
-                    constructor: {
-                        value: subClass,
-                        enumerable: !1,
-                        writable: !0,
-                        configurable: !0
-                    }
-                }), superClass && (Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass);
-            }
-            Object.defineProperty(exports, "__esModule", {
-                value: !0
-            });
-            var _createClass = function() {
-                function defineProperties(target, props) {
-                    for (var i = 0; i < props.length; i++) {
-                        var descriptor = props[i];
-                        descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
-                        "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
-                    }
-                }
-                return function(Constructor, protoProps, staticProps) {
-                    return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
-                    Constructor;
-                };
-            }(), _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
-                return typeof obj;
-            } : function(obj) {
-                return obj && "function" == typeof Symbol && obj.constructor === Symbol ? "symbol" : typeof obj;
-            }, _eventemitter = __webpack_require__(17), _eventemitter2 = _interopRequireDefault(_eventemitter), _eventsource = __webpack_require__(38), _eventsource2 = _interopRequireDefault(_eventsource), _urlJoin = __webpack_require__(22), _urlJoin2 = _interopRequireDefault(_urlJoin), _queryString = __webpack_require__(46), _queryString2 = _interopRequireDefault(_queryString), _lodash = __webpack_require__(11), _lodash2 = _interopRequireDefault(_lodash), _store = __webpack_require__(9), nextTick = function() {
-                return "object" === ("undefined" == typeof process ? "undefined" : _typeof(process)) && "function" == typeof process.nextTick ? process.nextTick : "function" == typeof setImmediate ? setImmediate : function(cb) {
-                    return setTimeout(cb, 0);
-                };
-            }(), defaultOptions = {
-                url: "/api/event/stream",
-                token: ""
-            }, EventStream = function(_EventEmitter) {
-                function EventStream() {
-                    var options = arguments.length <= 0 || void 0 === arguments[0] ? defaultOptions : arguments[0];
-                    _classCallCheck(this, EventStream);
-                    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventStream).call(this));
-                    return _this._queue = [], _this._processing = !1, options && options.url && _this.open(options), 
-                    _this;
-                }
-                return _inherits(EventStream, _EventEmitter), _createClass(EventStream, [ {
-                    key: "open",
-                    value: function(options) {
-                        var _this2 = this;
-                        this.close();
-                        var token = options.token || (0, _store.getToken)(), params = _queryString2["default"].stringify({
-                            auth_token: token
-                        }), url = (0, _urlJoin2["default"])(options.url, "?" + params), source = new _eventsource2["default"](url);
-                        this.source = source, source.onerror = function(err) {
-                            console.log("SSE error:", err), _this2.emit("error", err);
-                        }, source.onmessage = function(e) {
-                            var msg = _lodash2["default"].isString(e.data) ? JSON.parse(e.data) : e.data;
-                            console.log("SSE message:", msg), _this2.handleEvent(msg);
-                        };
-                    }
-                }, {
-                    key: "close",
-                    value: function() {
-                        this.source && (this.source.close(), this.source = null);
-                    }
-                }, {
-                    key: "handleEvent",
-                    value: function(e) {
-                        var action = (e.action || "").toLowerCase(), id = e.resource_id, data = e.body, type = (e.type || "").toLowerCase(), eventType = type + "." + action;
-                        "delete" === action && (data = id), this._push(eventType, data);
-                    }
-                }, {
-                    key: "_push",
-                    value: function(eventType, data) {
-                        var _this3 = this;
-                        this._queue.push(function() {
-                            return _this3.emit(eventType, data);
-                        }), this._processing || (this._processing = !0, this._loop());
-                    }
-                }, {
-                    key: "_loop",
-                    value: function() {
-                        var _this4 = this, fn = this._queue.shift();
-                        nextTick(function() {
-                            try {
-                                fn();
-                            } catch (err) {
-                                console.log(err);
-                            }
-                            _this4._queue.length > 0 ? _this4._loop() : _this4._processing = !1;
-                        });
-                    }
-                } ]), EventStream;
-            }(_eventemitter2["default"]);
-            exports["default"] = EventStream;
-        }).call(exports, __webpack_require__(2), __webpack_require__(14).setImmediate);
-    }, /* 33 */
+    }, /* 34 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -14964,7 +14993,199 @@
             return _inherits(Message, _Resource), Message;
         }(_resource2["default"]);
         exports["default"] = Message;
-    }, /* 34 */
+    }, /* 35 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        "use strict";
+        function _interopRequireDefault(obj) {
+            return obj && obj.__esModule ? obj : {
+                "default": obj
+            };
+        }
+        function _toConsumableArray(arr) {
+            if (Array.isArray(arr)) {
+                for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+                return arr2;
+            }
+            return Array.from(arr);
+        }
+        function _defineProperty(obj, key, value) {
+            return key in obj ? Object.defineProperty(obj, key, {
+                value: value,
+                enumerable: !0,
+                configurable: !0,
+                writable: !0
+            }) : obj[key] = value, obj;
+        }
+        function reduxCollection(_ref) {
+            function makeActionType(t) {
+                return actionPrefix ? actionPrefix + "/t" : t;
+            }
+            function makeErrorHandler() {
+                return function(err) {
+                    // TODO set error state
+                    console.log(err);
+                };
+            }
+            function reducer(state, action) {
+                if (action.type === actionTypes.set) {
+                    if (!action.payload) return state;
+                    var value = _lodash2["default"].isArray(action.payload) ? action.payload : [ action.payload ];
+                    return _extends({}, state, _defineProperty({}, collectionName, value));
+                }
+                if (action.type === actionTypes.add) {
+                    var items = _lodash2["default"].isArray(action.payload) ? action.payload : [ action.payload ], _value = [].concat(_toConsumableArray(state[collectionName] || []), _toConsumableArray(items));
+                    return _extends({}, state, _defineProperty({}, collectionName, _value));
+                }
+                if (action.type === actionTypes.remove) {
+                    var _ret = function() {
+                        var id = action.payload, value = (state[collectionName] || []).filter(function(t) {
+                            return t.id !== id;
+                        });
+                        return {
+                            v: _extends({}, state, _defineProperty({}, collectionName, value))
+                        };
+                    }();
+                    if ("object" === ("undefined" == typeof _ret ? "undefined" : _typeof(_ret))) return _ret.v;
+                }
+                if (action.type === actionTypes.update) {
+                    var item = action.payload, _value2 = updateItem(state[collectionName] || [], item);
+                    return _extends({}, state, _defineProperty({}, collectionName, _value2));
+                }
+                return state;
+            }
+            function getState() {
+                return getStore().getState();
+            }
+            function dispatchAction(action) {
+                return getStore().dispatch(action);
+            }
+            function getItems() {
+                var state = getState();
+                return state[collectionName] || [];
+            }
+            //
+            // Event handlers
+            //
+            function onCreate(item) {
+                var items = getItems();
+                _lodash2["default"].find(items, function(t) {
+                    return t.id === item.id;
+                }) || dispatchAction(actionCreators.local.add(item));
+            }
+            function onDelete(id) {
+                var items = getItems();
+                _lodash2["default"].find(items, function(t) {
+                    return t.id === id;
+                }) && dispatchAction(actionCreators.local.remove(id));
+            }
+            function onUpdate(item) {
+                var items = getItems();
+                _lodash2["default"].find(items, function(t) {
+                    return t.id === item.id;
+                }) && dispatchAction(actionCreators.local.update(item));
+            }
+            var resourceType = _ref.resourceType, collectionName = _ref.collectionName, getStore = _ref.getStore, _ref$actionPrefix = _ref.actionPrefix, actionPrefix = void 0 === _ref$actionPrefix ? "" : _ref$actionPrefix, actionTypes = {
+                set: makeActionType("set"),
+                add: makeActionType("add"),
+                remove: makeActionType("remove")
+            }, actionCreators = {
+                // sync local actions, rarely used
+                local: {
+                    set: function(items) {
+                        return {
+                            type: actionTypes.set,
+                            payload: items
+                        };
+                    },
+                    add: function(item) {
+                        return {
+                            type: actionTypes.add,
+                            payload: item
+                        };
+                    },
+                    remove: function(t) {
+                        var id = _lodash2["default"].isObject(t) ? t.id : t;
+                        return {
+                            type: actionTypes.remove,
+                            payload: id
+                        };
+                    }
+                },
+                // async actions
+                fetchAll: function() {
+                    return function(dispatch) {
+                        // TODO dispatch progress action
+                        _global.API[collectionName].fetch().then(function(items) {
+                            dispatch(actionCreators.local.set(items));
+                        }, makeErrorHandler(dispatch));
+                    };
+                },
+                fetchOne: function(id) {
+                    return function(dispatch) {
+                        // TODO dispatch progress action
+                        _global.API[resourceType](id).fetch().then(function(item) {
+                            // TODO add or select current item
+                            console.log(item);
+                        }, makeErrorHandler(dispatch));
+                    };
+                },
+                create: function(payload) {
+                    return function(dispatch) {
+                        // TODO dispatch progress action
+                        _global.API[collectionName].create(payload).then(function(item) {
+                            dispatch(actionCreators.local.add(item));
+                        }, makeErrorHandler(dispatch));
+                    };
+                },
+                remove: function(id) {
+                    return function(dispatch) {
+                        // TODO dispatch progress action
+                        _global.API[resourceType](id).remove().then(function() {
+                            dispatch(actionCreators.local.remove(id));
+                        }, makeErrorHandler(dispatch));
+                    };
+                },
+                update: function(item) {
+                    return function(dispatch) {
+                        // TODO dispatch progress action
+                        _global.API[resourceType](item.id).update(item).then(function(updated) {
+                            dispatch(actionCreators.local.update(updated));
+                        }, makeErrorHandler(dispatch));
+                    };
+                }
+            };
+            return actionCreators.reducer = reducer, _global.Events.on(resourceType + ".create", onCreate), 
+            _global.Events.on(resourceType + ".delete", onDelete), _global.Events.on(resourceType + ".remove", onDelete), 
+            _global.Events.on(resourceType + ".update", onUpdate), actionCreators;
+        }
+        function updateItem(array, item) {
+            var i = _lodash2["default"].findIndex(array, function(t) {
+                return t.id === item.id;
+            });
+            if (i >= 0) {
+                var result = [].concat(_toConsumableArray(array));
+                return result[i] = _extends({}, result[i], item), result;
+            }
+            return array;
+        }
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        });
+        var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol ? "symbol" : typeof obj;
+        }, _extends = Object.assign || function(target) {
+            for (var i = 1; i < arguments.length; i++) {
+                var source = arguments[i];
+                for (var key in source) Object.prototype.hasOwnProperty.call(source, key) && (target[key] = source[key]);
+            }
+            return target;
+        };
+        exports["default"] = reduxCollection;
+        var _lodash = __webpack_require__(11), _lodash2 = _interopRequireDefault(_lodash), _global = __webpack_require__(19);
+    }, /* 36 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -15032,7 +15253,7 @@
             } ]), Thread;
         }(_resource2["default"]);
         exports["default"] = Thread;
-    }, /* 35 */
+    }, /* 37 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -15074,7 +15295,7 @@
                 return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), 
                 Constructor;
             };
-        }(), _resource = __webpack_require__(6), _resource2 = _interopRequireDefault(_resource), _collection = __webpack_require__(16), _collection2 = _interopRequireDefault(_collection);
+        }(), _resource = __webpack_require__(6), _resource2 = _interopRequireDefault(_resource), _collection = __webpack_require__(17), _collection2 = _interopRequireDefault(_collection);
         exports.User = function(_Resource) {
             function User(client, id) {
                 return _classCallCheck(this, User), _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, client, "user", id));
@@ -15096,7 +15317,7 @@
                 }
             } ]), UserCollection;
         }(_collection2["default"]);
-    }, /* 36 */
+    }, /* 38 */
     /***/
     function(module, exports, __webpack_require__) {
         var lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -15158,7 +15379,7 @@
             var Arr = "undefined" != typeof Uint8Array ? Uint8Array : Array, PLUS = "+".charCodeAt(0), SLASH = "/".charCodeAt(0), NUMBER = "0".charCodeAt(0), LOWER = "a".charCodeAt(0), UPPER = "A".charCodeAt(0), PLUS_URL_SAFE = "-".charCodeAt(0), SLASH_URL_SAFE = "_".charCodeAt(0);
             exports.toByteArray = b64ToByteArray, exports.fromByteArray = uint8ToBase64;
         }(exports);
-    }, /* 37 */
+    }, /* 39 */
     /***/
     function(module, exports, __webpack_require__) {
         var __WEBPACK_AMD_DEFINE_RESULT__;
@@ -15227,7 +15448,7 @@
                 }
                 function lib$es6$promise$asap$$attemptVertx() {
                     try {
-                        var vertx = __webpack_require__(65);
+                        var vertx = __webpack_require__(67);
                         return lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext, 
                         lib$es6$promise$asap$$useVertxTimer();
                     } catch (e) {
@@ -15783,7 +16004,7 @@
                     polyfill: lib$es6$promise$polyfill$$default
                 };
                 /* global define:true module:true window: true */
-                __webpack_require__(63).amd ? (__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+                __webpack_require__(65).amd ? (__WEBPACK_AMD_DEFINE_RESULT__ = function() {
                     return lib$es6$promise$umd$$ES6Promise;
                 }.call(exports, __webpack_require__, exports, module), !(void 0 !== __WEBPACK_AMD_DEFINE_RESULT__ && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))) : "undefined" != typeof module && module.exports ? module.exports = lib$es6$promise$umd$$ES6Promise : "undefined" != typeof this && (this.ES6Promise = lib$es6$promise$umd$$ES6Promise), 
                 lib$es6$promise$polyfill$$default();
@@ -15791,7 +16012,7 @@
         }).call(exports, __webpack_require__(2), function() {
             return this;
         }(), __webpack_require__(15)(module));
-    }, /* 38 */
+    }, /* 40 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -15942,7 +16163,7 @@
                     enumerable: !0
                 });
             }
-            var original = __webpack_require__(45), parse = __webpack_require__(24).parse, events = __webpack_require__(10), https = __webpack_require__(41), http = __webpack_require__(18), util = __webpack_require__(25);
+            var original = __webpack_require__(47), parse = __webpack_require__(27).parse, events = __webpack_require__(10), https = __webpack_require__(43), http = __webpack_require__(21), util = __webpack_require__(28);
             module.exports = EventSource, util.inherits(EventSource, events.EventEmitter), EventSource.prototype.constructor = EventSource, 
             // make stacktraces readable
             [ "open", "error", "message" ].forEach(function(method) {
@@ -15994,10 +16215,10 @@
                 listener._listener = listener, this.on(method, listener));
             };
         }).call(exports, __webpack_require__(2));
-    }, /* 39 */
+    }, /* 41 */
     /***/
     function(module, exports, __webpack_require__) {
-        var Stream = __webpack_require__(5), Response = __webpack_require__(40), Base64 = __webpack_require__(26), inherits = __webpack_require__(1), Request = module.exports = function(xhr, params) {
+        var Stream = __webpack_require__(5), Response = __webpack_require__(42), Base64 = __webpack_require__(29), inherits = __webpack_require__(1), Request = module.exports = function(xhr, params) {
             var self = this;
             self.writable = !0, self.xhr = xhr, self.body = [], self.uri = (params.protocol || "http:") + "//" + params.host + (params.port ? ":" + params.port : "") + (params.path || "/"), 
             "undefined" == typeof params.withCredentials && (params.withCredentials = !0);
@@ -16077,7 +16298,7 @@
         }, isXHR2Compatible = function(obj) {
             return "undefined" != typeof Blob && obj instanceof Blob ? !0 : "undefined" != typeof ArrayBuffer && obj instanceof ArrayBuffer ? !0 : "undefined" != typeof FormData && obj instanceof FormData ? !0 : void 0;
         };
-    }, /* 40 */
+    }, /* 42 */
     /***/
     function(module, exports, __webpack_require__) {
         function parseHeaders(res) {
@@ -16093,7 +16314,7 @@
             }
             return headers;
         }
-        var Stream = __webpack_require__(5), util = __webpack_require__(25), Response = module.exports = function(res) {
+        var Stream = __webpack_require__(5), util = __webpack_require__(28), Response = module.exports = function(res) {
             this.offset = 0, this.readable = !0;
         };
         util.inherits(Response, Stream);
@@ -16136,15 +16357,15 @@
         var isArray = Array.isArray || function(xs) {
             return "[object Array]" === Object.prototype.toString.call(xs);
         };
-    }, /* 41 */
+    }, /* 43 */
     /***/
     function(module, exports, __webpack_require__) {
-        var http = __webpack_require__(18), https = module.exports;
+        var http = __webpack_require__(21), https = module.exports;
         for (var key in http) http.hasOwnProperty(key) && (https[key] = http[key]);
         https.request = function(params, cb) {
             return params || (params = {}), params.scheme = "https", http.request.call(this, params, cb);
         };
-    }, /* 42 */
+    }, /* 44 */
     /***/
     function(module, exports) {
         exports.read = function(buffer, offset, isLE, mLen, nBytes) {
@@ -16170,22 +16391,22 @@
             e /= 256, eLen -= 8) ;
             buffer[offset + i - d] |= 128 * s;
         };
-    }, /* 43 */
+    }, /* 45 */
     /***/
     function(module, exports) {
         var toString = {}.toString;
         module.exports = Array.isArray || function(arr) {
             return "[object Array]" == toString.call(arr);
         };
-    }, /* 44 */
+    }, /* 46 */
     /***/
     function(module, exports, __webpack_require__) {
         // the whatwg-fetch polyfill installs the fetch() function
         // on the global object (window or self)
         //
         // Return that as the export for use in Webpack, Browserify etc.
-        __webpack_require__(64), module.exports = self.fetch.bind(self);
-    }, /* 45 */
+        __webpack_require__(66), module.exports = self.fetch.bind(self);
+    }, /* 47 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -16207,7 +16428,7 @@
             //
             return "string" == typeof url && (url = parse(url)), url.protocol && url.hostname ? (url.protocol + "//" + url.host).toLowerCase() : "null";
         }
-        var parse = __webpack_require__(23);
+        var parse = __webpack_require__(26);
         /**
 	 * Check if the origins are the same.
 	 *
@@ -16222,14 +16443,14 @@
         // Expose the origin
         //
         module.exports = origin;
-    }, /* 46 */
+    }, /* 48 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
         function encode(value, strict) {
             return strict ? strictUriEncode(value) : encodeURIComponent(value);
         }
-        var strictUriEncode = __webpack_require__(58);
+        var strictUriEncode = __webpack_require__(60);
         exports.extract = function(str) {
             return str.split("?")[1] || "";
         }, exports.parse = function(str) {
@@ -16259,7 +16480,7 @@
                 return x.length > 0;
             }).join("&") : "";
         };
-    }, /* 47 */
+    }, /* 49 */
     /***/
     function(module, exports) {
         // Copyright Joyent, Inc. and other Node contributors.
@@ -16307,7 +16528,7 @@
             }
             return obj;
         };
-    }, /* 48 */
+    }, /* 50 */
     /***/
     function(module, exports) {
         // Copyright Joyent, Inc. and other Node contributors.
@@ -16354,12 +16575,12 @@
                 }).join(sep) : ks + encodeURIComponent(stringifyPrimitive(obj[k]));
             }).join(sep) : name ? encodeURIComponent(stringifyPrimitive(name)) + eq + encodeURIComponent(stringifyPrimitive(obj)) : "";
         };
-    }, /* 49 */
+    }, /* 51 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
-        exports.decode = exports.parse = __webpack_require__(47), exports.encode = exports.stringify = __webpack_require__(48);
-    }, /* 50 */
+        exports.decode = exports.parse = __webpack_require__(49), exports.encode = exports.stringify = __webpack_require__(50);
+    }, /* 52 */
     /***/
     function(module, exports) {
         "use strict";
@@ -16402,7 +16623,7 @@
         // Expose the module.
         //
         exports.stringify = querystringify, exports.parse = querystring;
-    }, /* 51 */
+    }, /* 53 */
     /***/
     function(module, exports) {
         "use strict";
@@ -16437,41 +16658,41 @@
             }
             return 0 !== port;
         };
-    }, /* 52 */
+    }, /* 54 */
     /***/
     function(module, exports) {
         module.exports = Array.isArray || function(arr) {
             return "[object Array]" == Object.prototype.toString.call(arr);
         };
-    }, /* 53 */
+    }, /* 55 */
     /***/
     function(module, exports, __webpack_require__) {
         module.exports = __webpack_require__(3);
-    }, /* 54 */
+    }, /* 56 */
     /***/
     function(module, exports, __webpack_require__) {
-        module.exports = __webpack_require__(19);
-    }, /* 55 */
+        module.exports = __webpack_require__(22);
+    }, /* 57 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
         (function(process) {
-            exports = module.exports = __webpack_require__(20), exports.Stream = __webpack_require__(5), 
+            exports = module.exports = __webpack_require__(23), exports.Stream = __webpack_require__(5), 
             exports.Readable = exports, exports.Writable = __webpack_require__(13), exports.Duplex = __webpack_require__(3), 
-            exports.Transform = __webpack_require__(12), exports.PassThrough = __webpack_require__(19), 
+            exports.Transform = __webpack_require__(12), exports.PassThrough = __webpack_require__(22), 
             process.browser || "disable" !== {
                 NODE_ENV: "production"
             }.READABLE_STREAM || (module.exports = __webpack_require__(5));
         }).call(exports, __webpack_require__(2));
-    }, /* 56 */
+    }, /* 58 */
     /***/
     function(module, exports, __webpack_require__) {
         module.exports = __webpack_require__(12);
-    }, /* 57 */
+    }, /* 59 */
     /***/
     function(module, exports, __webpack_require__) {
         module.exports = __webpack_require__(13);
-    }, /* 58 */
+    }, /* 60 */
     /***/
     function(module, exports) {
         "use strict";
@@ -16480,7 +16701,7 @@
                 return "%" + c.charCodeAt(0).toString(16).toUpperCase();
             });
         };
-    }, /* 59 */
+    }, /* 61 */
     /***/
     function(module, exports) {
         function cleanUpNextTick() {
@@ -16524,7 +16745,7 @@
         }, process.umask = function() {
             return 0;
         };
-    }, /* 60 */
+    }, /* 62 */
     /***/
     function(module, exports, __webpack_require__) {
         /* WEBPACK VAR INJECTION */
@@ -16555,7 +16776,7 @@
 	 * @api public
 	 */
             module.exports = function(loc) {
-                loc = loc || global.location || {}, URL = URL || __webpack_require__(23);
+                loc = loc || global.location || {}, URL = URL || __webpack_require__(26);
                 var key, finaldestination = {}, type = typeof loc;
                 if ("blob:" === loc.protocol) finaldestination = new URL(unescape(loc.pathname), {}); else if ("string" === type) {
                     finaldestination = new URL(loc, {});
@@ -16566,7 +16787,7 @@
         }).call(exports, function() {
             return this;
         }());
-    }, /* 61 */
+    }, /* 63 */
     /***/
     function(module, exports, __webpack_require__) {
         var __WEBPACK_AMD_DEFINE_RESULT__;
@@ -16838,19 +17059,19 @@
         }).call(exports, __webpack_require__(15)(module), function() {
             return this;
         }());
-    }, /* 62 */
+    }, /* 64 */
     /***/
     function(module, exports) {
         module.exports = function(arg) {
             return arg && "object" == typeof arg && "function" == typeof arg.copy && "function" == typeof arg.fill && "function" == typeof arg.readUInt8;
         };
-    }, /* 63 */
+    }, /* 65 */
     /***/
     function(module, exports) {
         module.exports = function() {
             throw new Error("define cannot be used indirect");
         };
-    }, /* 64 */
+    }, /* 66 */
     /***/
     function(module, exports) {
         !function(self) {
@@ -17080,9 +17301,9 @@
                 }, self.fetch.polyfill = !0;
             }
         }("undefined" != typeof self ? self : this);
-    }, /* 65 */
+    }, /* 67 */
     /***/
-    function(module, exports) {}, /* 66 */
+    function(module, exports) {}, /* 68 */
     /***/
     function(module, exports) {} ]);
 });

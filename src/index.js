@@ -3,6 +3,8 @@ import Client from './client';
 import { getToken, setToken } from './store';
 import EventStream from './eventstream';
 export mimeType from './mimeType';
+export { API, ServerEvents, SSE } from './global';
+import reduxCollection from './redux';
 
 export function initSession(init, showLogin) {
 	const client = new Client();
@@ -22,15 +24,12 @@ export function isLoggedIn() {
 	return (getToken() || '').length > 0;
 }
 
-export const API = new Client();
-export const SSE = new EventStream();
-export const ServerEvents = SSE;
-
 export {
 	EventStream,
 	Client,
 	getToken,
 	setToken,
+	reduxCollection,
 };
 
 export default Client;
