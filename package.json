@@ -1,6 +1,6 @@
 {
   "name": "fuhub-client",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "description": "hub client",
   "main": "lib/index.js",
   "scripts": {
