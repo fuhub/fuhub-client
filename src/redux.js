@@ -5,16 +5,20 @@ export default function reduxCollection({
   resourceType,
   collectionName,
 	getStore,
+	extend,
+	selectedKey = '',
   actionPrefix = '',
 }) {
 	function makeActionType(t) {
-		return actionPrefix ? `${actionPrefix}/t` : t;
+		return actionPrefix ? `${actionPrefix}/${t.toUpperCase()}` : t.toUpperCase();
 	}
 
 	const actionTypes = {
-		set: makeActionType('set'),
+		init: makeActionType('init'),
 		add: makeActionType('add'),
 		remove: makeActionType('remove'),
+		select: makeActionType('select'),
+		set: makeActionType('set'),
 	};
 
 	function makeErrorHandler() {
@@ -24,11 +28,11 @@ export default function reduxCollection({
 		};
 	}
 
-	const actionCreators = {
-		// sync local actions, rarely used
+	let actionCreators = {
+		// sync local actions, it should be rarely used
 		local: {
-			set(items) {
-				return { type: actionTypes.set, payload: items };
+			init(items) {
+				return { type: actionTypes.init, payload: items };
 			},
 			add(item) {
 				return { type: actionTypes.add, payload: item };
@@ -36,6 +40,13 @@ export default function reduxCollection({
 			remove(t) {
 				const id = _.isObject(t) ? t.id : t;
 				return { type: actionTypes.remove, payload: id };
+			},
+			select(item) {
+				return { type: actionTypes.select, payload: item };
+			},
+			// general purpose action, it should be rarely used
+			set(key, value) {
+				return { type: actionTypes.set, payload: { key, value } };
 			},
 		},
 
@@ -45,7 +56,7 @@ export default function reduxCollection({
 			return dispatch => {
 				// TODO dispatch progress action
 				API[collectionName].fetch().then(items => {
-					dispatch(actionCreators.local.set(items));
+					dispatch(actionCreators.local.init(items));
 				}, makeErrorHandler(dispatch));
 			};
 		},
@@ -54,8 +65,7 @@ export default function reduxCollection({
 			return dispatch => {
 				// TODO dispatch progress action
 				API[resourceType](id).fetch().then(item => {
-					// TODO add or select current item
-					console.log(item);
+					dispatch(actionCreators.local.select(item));
 				}, makeErrorHandler(dispatch));
 			};
 		},
@@ -89,12 +99,13 @@ export default function reduxCollection({
 	};
 
 	function reducer(state, action) {
-		if (action.type === actionTypes.set) {
+		if (action.type === actionTypes.init) {
 			if (!action.payload) return state;
 			const value = _.isArray(action.payload) ? action.payload : [action.payload];
 			return { ...state, [collectionName]: value };
 		}
 		if (action.type === actionTypes.add) {
+			// update item if it already exists
 			const items = _.isArray(action.payload) ? action.payload : [action.payload];
 			const value = [...(state[collectionName] || []), ...items];
 			return { ...state, [collectionName]: value };
@@ -109,10 +120,31 @@ export default function reduxCollection({
 			const value = updateItem(state[collectionName] || [], item);
 			return { ...state, [collectionName]: value };
 		}
+		if (action.type === actionTypes.select) {
+			const key = selectedKey || `current${_.capitalize(resourceType)}`;
+			const item = action.payload;
+			let items = state[collectionName] || [];
+			const i = indexOf(items, item.id);
+			if (i >= 0) {
+				items = [...items];
+				items[i] = item;
+			}
+			return { ...state, [collectionName]: items, [key]: item };
+		}
+		// general purpose action, it should be rarely used
+		if (action.type === actionTypes.set) {
+			const { key, value } = action.payload;
+			return { ...state, [key]: value };
+		}
 		return state;
 	}
 
 	actionCreators.reducer = reducer;
+	actionCreators.actionTypes = actionTypes;
+
+	if (_.isFunction(extend)) {
+		actionCreators = extend(actionCreators);
+	}
 
 	function getState() {
 		return getStore().getState();
@@ -133,20 +165,23 @@ export default function reduxCollection({
 
 	function onCreate(item) {
 		const items = getItems();
-		if (_.find(items, t => t.id === item.id)) return;
-		dispatchAction(actionCreators.local.add(item));
+		if (indexOf(items, item.id)) {
+			dispatchAction(actionCreators.local.update(item));
+		} else {
+			dispatchAction(actionCreators.local.add(item));
+		}
 	}
 
 	function onDelete(id) {
 		const items = getItems();
-		if (_.find(items, t => t.id === id)) {
+		if (indexOf(items, id) >= 0) {
 			dispatchAction(actionCreators.local.remove(id));
 		}
 	}
 
 	function onUpdate(item) {
 		const items = getItems();
-		if (_.find(items, t => t.id === item.id)) {
+		if (indexOf(items, item.id) >= 0) {
 			dispatchAction(actionCreators.local.update(item));
 		}
 	}
@@ -159,8 +194,12 @@ export default function reduxCollection({
 	return actionCreators;
 }
 
+function indexOf(array, id) {
+	return _.findIndex(array || [], t => t.id === id);
+}
+
 function updateItem(array, item) {
-	const i = _.findIndex(array, t => t.id === item.id);
+	const i = indexOf(array, item.id);
 	if (i >= 0) {
 		const result = [...array];
 		result[i] = { ...result[i], ...item };

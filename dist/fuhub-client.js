@@ -15019,7 +15019,7 @@
         }
         function reduxCollection(_ref) {
             function makeActionType(t) {
-                return actionPrefix ? actionPrefix + "/t" : t;
+                return actionPrefix ? actionPrefix + "/" + t.toUpperCase() : t.toUpperCase();
             }
             function makeErrorHandler() {
                 return function(err) {
@@ -15028,12 +15028,13 @@
                 };
             }
             function reducer(state, action) {
-                if (action.type === actionTypes.set) {
+                if (action.type === actionTypes.init) {
                     if (!action.payload) return state;
                     var value = _lodash2["default"].isArray(action.payload) ? action.payload : [ action.payload ];
                     return _extends({}, state, _defineProperty({}, collectionName, value));
                 }
                 if (action.type === actionTypes.add) {
+                    // update item if it already exists
                     var items = _lodash2["default"].isArray(action.payload) ? action.payload : [ action.payload ], _value = [].concat(_toConsumableArray(state[collectionName] || []), _toConsumableArray(items));
                     return _extends({}, state, _defineProperty({}, collectionName, _value));
                 }
@@ -15052,6 +15053,17 @@
                     var item = action.payload, _value2 = updateItem(state[collectionName] || [], item);
                     return _extends({}, state, _defineProperty({}, collectionName, _value2));
                 }
+                if (action.type === actionTypes.select) {
+                    var _extends6, key = selectedKey || "current" + _lodash2["default"].capitalize(resourceType), _item = action.payload, _items = state[collectionName] || [], i = indexOf(_items, _item.id);
+                    return i >= 0 && (_items = [].concat(_toConsumableArray(_items)), _items[i] = _item), 
+                    _extends({}, state, (_extends6 = {}, _defineProperty(_extends6, collectionName, _items), 
+                    _defineProperty(_extends6, key, _item), _extends6));
+                }
+                // general purpose action, it should be rarely used
+                if (action.type === actionTypes.set) {
+                    var _action$payload = action.payload, _key = _action$payload.key, _value3 = _action$payload.value;
+                    return _extends({}, state, _defineProperty({}, _key, _value3));
+                }
                 return state;
             }
             function getState() {
@@ -15069,32 +15081,28 @@
             //
             function onCreate(item) {
                 var items = getItems();
-                _lodash2["default"].find(items, function(t) {
-                    return t.id === item.id;
-                }) || dispatchAction(actionCreators.local.add(item));
+                dispatchAction(indexOf(items, item.id) ? actionCreators.local.update(item) : actionCreators.local.add(item));
             }
             function onDelete(id) {
                 var items = getItems();
-                _lodash2["default"].find(items, function(t) {
-                    return t.id === id;
-                }) && dispatchAction(actionCreators.local.remove(id));
+                indexOf(items, id) >= 0 && dispatchAction(actionCreators.local.remove(id));
             }
             function onUpdate(item) {
                 var items = getItems();
-                _lodash2["default"].find(items, function(t) {
-                    return t.id === item.id;
-                }) && dispatchAction(actionCreators.local.update(item));
+                indexOf(items, item.id) >= 0 && dispatchAction(actionCreators.local.update(item));
             }
-            var resourceType = _ref.resourceType, collectionName = _ref.collectionName, getStore = _ref.getStore, _ref$actionPrefix = _ref.actionPrefix, actionPrefix = void 0 === _ref$actionPrefix ? "" : _ref$actionPrefix, actionTypes = {
-                set: makeActionType("set"),
+            var resourceType = _ref.resourceType, collectionName = _ref.collectionName, getStore = _ref.getStore, extend = _ref.extend, _ref$selectedKey = _ref.selectedKey, selectedKey = void 0 === _ref$selectedKey ? "" : _ref$selectedKey, _ref$actionPrefix = _ref.actionPrefix, actionPrefix = void 0 === _ref$actionPrefix ? "" : _ref$actionPrefix, actionTypes = {
+                init: makeActionType("init"),
                 add: makeActionType("add"),
-                remove: makeActionType("remove")
+                remove: makeActionType("remove"),
+                select: makeActionType("select"),
+                set: makeActionType("set")
             }, actionCreators = {
-                // sync local actions, rarely used
+                // sync local actions, it should be rarely used
                 local: {
-                    set: function(items) {
+                    init: function(items) {
                         return {
-                            type: actionTypes.set,
+                            type: actionTypes.init,
                             payload: items
                         };
                     },
@@ -15110,6 +15118,22 @@
                             type: actionTypes.remove,
                             payload: id
                         };
+                    },
+                    select: function(item) {
+                        return {
+                            type: actionTypes.select,
+                            payload: item
+                        };
+                    },
+                    // general purpose action, it should be rarely used
+                    set: function(key, value) {
+                        return {
+                            type: actionTypes.set,
+                            payload: {
+                                key: key,
+                                value: value
+                            }
+                        };
                     }
                 },
                 // async actions
@@ -15117,7 +15141,7 @@
                     return function(dispatch) {
                         // TODO dispatch progress action
                         _global.API[collectionName].fetch().then(function(items) {
-                            dispatch(actionCreators.local.set(items));
+                            dispatch(actionCreators.local.init(items));
                         }, makeErrorHandler(dispatch));
                     };
                 },
@@ -15125,8 +15149,7 @@
                     return function(dispatch) {
                         // TODO dispatch progress action
                         _global.API[resourceType](id).fetch().then(function(item) {
-                            // TODO add or select current item
-                            console.log(item);
+                            dispatch(actionCreators.local.select(item));
                         }, makeErrorHandler(dispatch));
                     };
                 },
@@ -15155,14 +15178,19 @@
                     };
                 }
             };
-            return actionCreators.reducer = reducer, _global.Events.on(resourceType + ".create", onCreate), 
-            _global.Events.on(resourceType + ".delete", onDelete), _global.Events.on(resourceType + ".remove", onDelete), 
-            _global.Events.on(resourceType + ".update", onUpdate), actionCreators;
+            return actionCreators.reducer = reducer, actionCreators.actionTypes = actionTypes, 
+            _lodash2["default"].isFunction(extend) && (actionCreators = extend(actionCreators)), 
+            _global.Events.on(resourceType + ".create", onCreate), _global.Events.on(resourceType + ".delete", onDelete), 
+            _global.Events.on(resourceType + ".remove", onDelete), _global.Events.on(resourceType + ".update", onUpdate), 
+            actionCreators;
+        }
+        function indexOf(array, id) {
+            return _lodash2["default"].findIndex(array || [], function(t) {
+                return t.id === id;
+            });
         }
         function updateItem(array, item) {
-            var i = _lodash2["default"].findIndex(array, function(t) {
-                return t.id === item.id;
-            });
+            var i = indexOf(array, item.id);
             if (i >= 0) {
                 var result = [].concat(_toConsumableArray(array));
                 return result[i] = _extends({}, result[i], item), result;
