@@ -27,7 +27,7 @@
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
     "pluralize": "^3.0.0",
-    "query-string": "^4.2.2",
+    "query-string": "^4.2.3",
     "url-join": "1.1.0"
   },
   "devDependencies": {
