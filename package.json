@@ -25,7 +25,7 @@
     "eventemitter3": "^2.0.2",
     "eventsource": "^0.2.1",
     "isomorphic-fetch": "^2.2.1",
-    "lodash": "^4.16.5",
+    "lodash": "^4.17.3",
     "pluralize": "^3.1.0",
     "query-string": "^4.2.3",
     "url-join": "1.1.0"
