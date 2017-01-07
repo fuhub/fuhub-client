@@ -6,7 +6,7 @@ export default class Collection {
   }
 
   fetch() {
-    return this.client.fetchJSON(this.path);
+    return this.client.fetchJSON(this.path).then(a => a || []);
   }
 
   load() {

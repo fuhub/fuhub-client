@@ -7,7 +7,7 @@ export default class Thread extends Resource {
   }
 
   messages() {
-    return this.fetchJSON(`${this.path}/messages`);
+    return this.fetchJSON(`${this.path}/messages`).then(a => a || []);
   }
 
   sendMessage(msg) {

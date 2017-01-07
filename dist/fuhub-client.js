@@ -13193,7 +13193,9 @@
             return _createClass(Collection, [ {
                 key: "fetch",
                 value: function() {
-                    return this.client.fetchJSON(this.path);
+                    return this.client.fetchJSON(this.path).then(function(a) {
+                        return a || [];
+                    });
                 }
             }, {
                 key: "load",
@@ -15201,7 +15203,9 @@
             return _inherits(Channel, _Resource), _createClass(Channel, [ {
                 key: "threads",
                 value: function() {
-                    return this.fetchJSON(this.path + "/threads");
+                    return this.fetchJSON(this.path + "/threads").then(function(a) {
+                        return a || [];
+                    });
                 }
             } ]), Channel;
         }(_resource2["default"]);
@@ -15398,7 +15402,9 @@
             return _inherits(Document, _Resource), _createClass(Document, [ {
                 key: "revisions",
                 value: function() {
-                    return this.fetchJSON(this.path + "/revisions");
+                    return this.fetchJSON(this.path + "/revisions").then(function(a) {
+                        return a || [];
+                    });
                 }
             }, {
                 key: "content",
@@ -15735,7 +15741,9 @@
             return _inherits(Thread, _Resource), _createClass(Thread, [ {
                 key: "messages",
                 value: function() {
-                    return this.fetchJSON(this.path + "/messages");
+                    return this.fetchJSON(this.path + "/messages").then(function(a) {
+                        return a || [];
+                    });
                 }
             }, {
                 key: "sendMessage",

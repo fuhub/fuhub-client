@@ -7,7 +7,7 @@ export default class Document extends Resource {
   }
 
   revisions() {
-    return this.fetchJSON(`${this.path}/revisions`);
+    return this.fetchJSON(`${this.path}/revisions`).then(a => a || []);
   }
 
   content() {

@@ -6,7 +6,7 @@ export default class Channel extends Resource {
   }
 
   threads() {
-    return this.fetchJSON(`${this.path}/threads`);
+    return this.fetchJSON(`${this.path}/threads`).then(a => a || []);
   }
 
   // TODO create thread
