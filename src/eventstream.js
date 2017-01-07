@@ -46,13 +46,13 @@ export default class EventStream extends EventEmitter {
 
     this.source = source;
 
-    source.onerror = err => {
+    source.onerror = (err) => {
       console.log('SSE error:', err);
       this.emit('error', err);
     };
 
-    source.onmessage = e => {
-      const msg = _.isString(e.data) ? JSON.parse(e.data) : e.data;
+    source.onmessage = (event) => {
+      const msg = _.isString(event.data) ? JSON.parse(event.data) : event.data;
       console.log('SSE message:', msg);
       this.handleEvent(msg);
     };

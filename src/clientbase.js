@@ -1,5 +1,5 @@
+/* eslint-disable */
 require('es6-promise').polyfill();
-/* eslint-disable import/imports-first */
 import _ from 'lodash';
 import fetch from 'isomorphic-fetch';
 import EventEmitter from 'eventemitter3';
@@ -51,7 +51,7 @@ export default class ClientBase extends EventEmitter {
       headers['Content-Type'] = mimeType.json;
     }
     const opts = { ...options, headers };
-    const onSuccess = response => {
+    const onSuccess = (response) => {
       if (response.status === 401) {
         this.emitError({ type: 'unauthorized' });
         return Promise.reject('unauthorized');
@@ -60,7 +60,7 @@ export default class ClientBase extends EventEmitter {
         return response;
       }
       if (response.status >= 400) {
-        return response.text().then(s => {
+        return response.text().then((s) => {
           try {
             const err = JSON.parse(s);
             this.emitError(err);

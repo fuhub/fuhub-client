@@ -27,7 +27,7 @@ export default class Client extends ClientBase {
   }
 
   login(payload) {
-    return this.postJSON('/api/login', payload, { noauth: true }).then(token => {
+    return this.postJSON('/api/login', payload, { noauth: true }).then((token) => {
       setToken(token);
       return token;
     });

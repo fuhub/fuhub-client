@@ -22,7 +22,7 @@ export default function reduxCollection({
   };
 
   function makeErrorHandler() {
-    return err => {
+    return (err) => {
       // TODO set error state
       console.log(err);
     };
@@ -53,34 +53,34 @@ export default function reduxCollection({
     // async actions
 
     fetchAll() {
-      return dispatch => {
+      return (dispatch) => {
         // TODO dispatch progress action
-        API[collectionName].fetch().then(items => {
-          dispatch(actionCreators.local.init(items));
+        API[collectionName].fetch().then((items) => {
+          dispatch(actionCreators.local.init(items || []));
         }, makeErrorHandler(dispatch));
       };
     },
 
     fetchOne(id) {
-      return dispatch => {
+      return (dispatch) => {
         // TODO dispatch progress action
-        API[resourceType](id).fetch().then(item => {
+        API[resourceType](id).fetch().then((item) => {
           dispatch(actionCreators.local.select(item));
         }, makeErrorHandler(dispatch));
       };
     },
 
     create(payload) {
-      return dispatch => {
+      return (dispatch) => {
         // TODO dispatch progress action
-        API[collectionName].create(payload).then(item => {
+        API[collectionName].create(payload).then((item) => {
           dispatch(actionCreators.local.add(item));
         }, makeErrorHandler(dispatch));
       };
     },
 
     remove(id) {
-      return dispatch => {
+      return (dispatch) => {
         // TODO dispatch progress action
         API[resourceType](id).remove().then(() => {
           dispatch(actionCreators.local.remove(id));
@@ -89,9 +89,9 @@ export default function reduxCollection({
     },
 
     update(item) {
-      return dispatch => {
+      return (dispatch) => {
         // TODO dispatch progress action
-        API[resourceType](item.id).update(item).then(updated => {
+        API[resourceType](item.id).update(item).then((updated) => {
           dispatch(actionCreators.local.update(updated));
         }, makeErrorHandler(dispatch));
       };

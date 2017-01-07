@@ -9,8 +9,8 @@ export { API, ServerEvents, SSE } from './global';
 
 export function initSession(init, showLogin) {
   const client = new Client();
-  client.token().then(t => {
-    setToken(t);
+  client.token().then((token) => {
+    setToken(token);
     if (_.isFunction(init)) {
       init();
     }
