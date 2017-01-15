@@ -13417,7 +13417,9 @@
                 key: "search",
                 value: function(query) {
                     return this.fetchJSON("/api/search", {
-                        q: query
+                        query: {
+                            q: query
+                        }
                     });
                 }
             } ]), Client;

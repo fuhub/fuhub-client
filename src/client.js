@@ -66,6 +66,6 @@ export default class Client extends ClientBase {
   }
 
   search(query) {
-    return this.fetchJSON('/api/search', { q: query });
+    return this.fetchJSON('/api/search', { query: { q: query } });
   }
 }
