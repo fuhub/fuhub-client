@@ -3,6 +3,7 @@ require('es6-promise').polyfill();
 import _ from 'lodash';
 import fetch from 'isomorphic-fetch';
 import EventEmitter from 'eventemitter3';
+import queryString from 'query-string';
 import urljoin from 'url-join';
 import mimeType from './mimeType';
 import { makeAuthorizationHeader } from './auth';
@@ -41,18 +42,20 @@ export default class ClientBase extends EventEmitter {
     if (_.isObject(options.body)) {
       options.body = JSON.stringify(options.body); // eslint-disable-line
     }
+
     const method = (options.method || 'get').toLowerCase();
     const auth = options.noauth ? '' : this.makeAuth();
     const headers = { ...(options.headers || {}) };
     if (auth) {
       headers.Authorization = auth;
     }
-    if (options.body) {
+    if (options.body && !headers['Content-Type']) {
       headers['Content-Type'] = mimeType.json;
     }
-    const opts = { ...options, headers };
+
     const onSuccess = (response) => {
       if (response.status === 401) {
+        // TODO emit object error
         this.emitError({ type: 'unauthorized' });
         return Promise.reject('unauthorized');
       }
@@ -73,7 +76,15 @@ export default class ClientBase extends EventEmitter {
       }
       return response;
     };
-    return fetch(this.absurl(path), opts).then(onSuccess, err => this.emitError(err));
+
+    let qs = '';
+    if (_.isObject(options.query)) {
+      qs = `?${queryString.stringify(options.query)}`;
+    }
+
+    const url = this.absurl(path) + qs;
+    const params = { ...options, headers };
+    return fetch(url, params).then(onSuccess, err => this.emitError(err));
   }
 
   fetchJSON(path, options = {}) {
