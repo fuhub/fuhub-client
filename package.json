@@ -23,7 +23,7 @@
   "dependencies": {
     "es6-promise": "^4.0.5",
     "eventemitter3": "^2.0.2",
-    "eventsource": "^0.2.2",
+    "eventsource": "^1.0.1",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "pluralize": "^4.0.0",
